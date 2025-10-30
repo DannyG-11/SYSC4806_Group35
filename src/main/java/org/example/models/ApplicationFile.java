@@ -18,7 +18,8 @@ public class ApplicationFile {
     @ManyToMany
     private List<Professor> professors;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "application_id")
     private List<Document> documents;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

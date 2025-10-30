@@ -10,7 +10,7 @@ import java.util.List;
 public interface ApplicationFileRepository extends CrudRepository<ApplicationFile, Long> {
     ApplicationFile findById(long id);
 
-    @Query("select a from ApplicationFile a join a.professors p where p.id == :professorId")
+    @Query("select a from ApplicationFile a join a.professors p where p.id = :professorId")
     List<ApplicationFile> findByProfessorId(@Param("professorId") Long professorId);
 
 }
