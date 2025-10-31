@@ -61,7 +61,7 @@ public class GraduateAdmissionsControllerTests {
                 .andExpect(content().string(containsString("[]")));
     }
 
-    // Test POST /addressbooks (create new address book)
+    // Test POST /api/applications (create new application)
     @Test
     void createApplicationTest() throws Exception {
         Professor professor = new Professor();
