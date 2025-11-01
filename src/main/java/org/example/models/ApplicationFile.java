@@ -19,7 +19,7 @@ public class ApplicationFile {
     private List<Professor> professors;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "applicaion_id")
+    @JoinColumn(name = "application_id")
     private List<Document> documents;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
