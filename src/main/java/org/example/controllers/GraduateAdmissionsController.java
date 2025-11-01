@@ -5,6 +5,7 @@ import org.example.models.Professor;
 import org.example.repositories.ApplicationFileRepository;
 import org.example.repositories.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -50,5 +51,29 @@ public class GraduateAdmissionsController {
         }
         applicationFile.setProfessors(managedProfessors);
         return applicationFileRepo.save(applicationFile);
+    }
+
+    // Request professor evaluations
+    @PostMapping("/{id}/request-evaluation")
+    public ResponseEntity<ApplicationFile> requestEvaluation(@PathVariable Long id){
+        Optional<ApplicationFile> applicationFileOptional = applicationFileRepo.findById(id);
+        if (applicationFileOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ApplicationFile applicationFile = applicationFileOptional.get();
+        applicationFile.setAvailableToProfs(true);
+        applicationFileRepo.save(applicationFile);
+
+        return ResponseEntity.ok(applicationFile);
+    }
+
+    // Reject application
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<String> rejectApplication(@PathVariable Long id) {
+        Optional<ApplicationFile> appOpt = applicationFileRepo.findById(id);
+        if (appOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        applicationFileRepo.deleteById(id);
+        return ResponseEntity.ok("Application rejected.");
     }
 }

@@ -341,7 +341,6 @@
         const firstName = document.getElementById('profFirstName').value;
         const lastName = document.getElementById('profLastName').value;
         const email = document.getElementById('profEmail').value;
-
         if (!firstName || !lastName || !email) {
             alert('Please fill in all professor fields');
             return;
@@ -398,7 +397,7 @@
             return;
         }
 
-        const newDoc = { fileName, fileUrl };
+        const newDoc = { title: fileName, link: fileUrl };
         documents.push(newDoc);
 
         // Clear inputs
@@ -423,8 +422,8 @@
             div.className = 'document-item';
             div.innerHTML = `
                     <div class="document-info">
-                        <h4>${doc.fileName} (${doc.fileType})</h4>
-                        <p>${doc.fileUrl}</p>
+                        <h4>${doc.title}</h4>
+                        <p>${doc.link}</p>
                         ${doc.description ? `<p style="font-size: 13px; margin-top: 5px;">${doc.description}</p>` : ''}
                     </div>
                     <button class="remove-btn" onclick="removeDocument(${index})">Remove</button>
@@ -462,7 +461,7 @@
                 phoneNumber: document.getElementById('phoneNumber').value,
                 address: document.getElementById('address').value
             },
-            desiredField: document.getElementById('desiredField').value,
+            fieldOfResearch: document.getElementById('desiredField').value,
             professors: professors,
             documents: documents
         };

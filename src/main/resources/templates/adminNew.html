@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>New Applications</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script th:src="@{/js/adminNew.js}"></script>
+    <style>
+        #reviewPopup {
+            display:none;
+            border:1px solid black;
+            padding:12px;
+            margin-top:20px;
+            background:#f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>New Applications</h1>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Applicant Name</th>
+        <th>Email</th>
+        <th>Field of Research</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="app : ${applications}">
+        <td th:text="${app.id}"></td>
+        <td th:text="${app.personalInfo.firstName + ' ' + app.personalInfo.lastName}"></td>
+        <td th:text="${app.personalInfo.email}"></td>
+        <td th:text="${app.fieldOfResearch}"></td>
+        <td>
+            <button class="review-btn" th:attr="data-id=${app.id}">Review</button>
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+<div id="reviewPopup"></div>
+
+</body>
+</html>
