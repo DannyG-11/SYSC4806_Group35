@@ -1,6 +1,7 @@
 package org.example.repositories;
 
 import org.example.models.ApplicationFile;
+import org.example.models.RecommendationStatus;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -10,4 +11,9 @@ public interface ApplicationFileRepository extends CrudRepository<ApplicationFil
 
     List<ApplicationFile> findByProfessors_Id(Long professorId);
 
+    List<ApplicationFile> findByStatus(RecommendationStatus status);
+
+    List<ApplicationFile> findByFieldOfResearch(String fieldOfResearch);
+
+    List<ApplicationFile> findByAvailableToProfs(boolean availableToProfs);
 }

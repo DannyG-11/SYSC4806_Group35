@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Evaluate Applications</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+        }
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-section label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .filter-section select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .filter-section select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .status-PENDING {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-NOT_RECOMMENDED {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-RECOMMENDED_NO_SUPERVISION {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .status-RECOMMENDED_NO_FUNDING {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-RECOMMENDED_WITH_FUNDING {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn-view {
+            background: #3498db;
+            color: white;
+        }
+        .btn-view:hover {
+            background: #2980b9;
+        }
+        .btn-status {
+            background: #9b59b6;
+            color: white;
+        }
+        .btn-status:hover {
+            background: #8e44ad;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+        }
+        .empty-state h2 {
+            margin-bottom: 10px;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-header h2 {
+            margin-bottom: 5px;
+        }
+        .modal-header .app-id {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .modal-body {
+            padding: 30px;
+        }
+        .detail-section {
+            margin-bottom: 30px;
+        }
+        .detail-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            font-size: 18px;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .professor-card,
+        .document-card,
+        .evaluation-card{
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .professor-card h4,
+        .document-card h4,
+        .evaluation-card h4{
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .professor-card p,
+        .document-card p,
+        .evaluation-card p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-close {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-close:hover {
+            background: #7f8c8d;
+        }
+        .btn-large {
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+        .btn-not-recommended {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-not-recommended:hover {
+            background: #c0392b;
+        }
+        .btn-no-supervision {
+            background: #3498db;
+            color: white;
+        }
+        .btn-no-supervision:hover {
+            background: #2980b9;
+        }
+        .btn-no-funding {
+            background: #f39c12;
+            color: white;
+        }
+        .btn-no-funding:hover {
+            background: #e67e22;
+        }
+        .btn-with-funding {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-with-funding:hover {
+            background: #229954;
+        }
+        .status-selection {
+            width: 100%;
+        }
+        .status-selection select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Evaluate Applications</h1>
+        <p>Review and manage submitted research position applications</p>
+    </div>
+
+    <div class="filter-section">
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter">
+            <option value="">All Applications</option>
+            <option value="PENDING">Pending</option>
+            <option value="NOT_RECOMMENDED">Not Recommended</option>
+            <option value="RECOMMENDED_NO_SUPERVISION">Recommended (No Supervision)</option>
+            <option value="RECOMMENDED_NO_FUNDING">Recommended (No Funding)</option>
+            <option value="RECOMMENDED_WITH_FUNDING">Recommended (With Funding)</option>
+        </select>
+
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Applicant Name</th>
+                <th>Email</th>
+                <th>Research Field</th>
+                <th>Professors</th>
+                <th>Documents</th>
+                <th>Evaluations</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="applicationsTableBody">
+            <tr>
+                <td colspan="9">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading applications...</p>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for viewing application details -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalApplicantName"></h2>
+            <div class="app-id" id="modalAppId"></div>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Content populated by jQuery -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-close btn-large" id="closeModalBtn">Close</button>
+            <div class="modal-actions">
+                <button class="btn btn-not-recommended btn-large" id="modalNotRecommendedBtn">Not Recommended</button>
+                <button class="btn btn-no-supervision btn-large" id="modalNoSupervisionBtn">Rec. No Supervision</button>
+                <button class="btn btn-no-funding btn-large" id="modalNoFundingBtn">Rec. No Funding</button>
+                <button class="btn btn-with-funding btn-large" id="modalWithFundingBtn">Rec. With Funding</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for changing status -->
+<div class="modal-overlay" id="statusModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Change Application Status</h2>
+        </div>
+        <div class="modal-body">
+            <div class="detail-section">
+                <label for="newStatusSelect" style="display: block; margin-bottom: 10px; font-weight: bold;">Select New Status:</label>
+                <select id="newStatusSelect" class="status-selection">
+                    <option value="PENDING">Pending</option>
+                    <option value="NOT_RECOMMENDED">Not Recommended for Admission</option>
+                    <option value="RECOMMENDED_NO_SUPERVISION">Recommend but Not Interested in Supervision</option>
+                    <option value="RECOMMENDED_NO_FUNDING">Recommend but No Funding</option>
+                    <option value="RECOMMENDED_WITH_FUNDING">Recommend with Funding</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-close btn-large" id="closeStatusModalBtn">Cancel</button>
+            <div class="modal-actions">
+                <button class="btn btn-with-funding btn-large" id="confirmStatusChangeBtn">Update Status</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let allApplications = [];
+        let currentApplication = null;
+
+        // Load all applications on page load
+        loadApplications();
+
+        // Event Handlers
+        $('#statusFilter').on('change', filterApplications);
+        $('#closeModalBtn').on('click', closeViewModal);
+        $('#closeStatusModalBtn').on('click', closeStatusModal);
+
+        // Close modals when clicking overlay
+        $('#viewModal, #statusModal').on('click', function(e) {
+            if (e.target === this) {
+                $(this).removeClass('active');
+            }
+        });
+
+        // Modal action buttons
+        $('#modalNotRecommendedBtn').on('click', function() {
+            if (currentApplication) {
+                updateApplicationStatus(currentApplication.id, 'NOT_RECOMMENDED');
+            }
+        });
+
+        $('#modalNoSupervisionBtn').on('click', function() {
+            if (currentApplication) {
+                updateApplicationStatus(currentApplication.id, 'RECOMMENDED_NO_SUPERVISION');
+            }
+        });
+
+        $('#modalNoFundingBtn').on('click', function() {
+            if (currentApplication) {
+                updateApplicationStatus(currentApplication.id, 'RECOMMENDED_NO_FUNDING');
+            }
+        });
+
+        $('#modalWithFundingBtn').on('click', function() {
+            if (currentApplication) {
+                updateApplicationStatus(currentApplication.id, 'RECOMMENDED_WITH_FUNDING');
+            }
+        });
+
+        $('#confirmStatusChangeBtn').on('click', function() {
+            if (currentApplication) {
+                const newStatus = $('#newStatusSelect').val();
+                updateApplicationStatus(currentApplication.id, newStatus);
+            }
+        });
+
+        // Load applications from API
+        function loadApplications() {
+            $.ajax({
+                url: '/api/applications',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    allApplications = data;
+                    renderApplications(allApplications);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading applications:', error);
+                    $('#applicationsTableBody').html(`
+                            <tr>
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <h2>Error Loading Applications</h2>
+                                        <p>Please try refreshing the page</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                }
+            });
+        }
+
+        // Render applications in table
+        function renderApplications(applications) {
+            const tbody = $('#applicationsTableBody');
+            tbody.empty();
+
+            if (applications.length === 0) {
+                tbody.html(`
+                        <tr>
+                            <td colspan="9">
+                                <div class="empty-state">
+                                    <h2>No Applications Found</h2>
+                                    <p>There are no applications matching your criteria</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+                return;
+            }
+
+            $.each(applications, function(index, app) {
+                const row = createApplicationRow(app);
+                tbody.append(row);
+            });
+        }
+
+        // Create table row for application
+        function createApplicationRow(app) {
+            const fullName = app.personalInfo.firstName + ' ' + app.personalInfo.lastName;
+            const professorNames = app.professors && app.professors.length > 0
+                ? app.professors.map(p => p.firstName + ' ' + p.lastName).join(', ')
+                : 'None';
+            const documentCount = app.documents ? app.documents.length : 0;
+            const evaluationsCounts = app.evaluations ? app.evaluations.length : 0;
+
+            const row = $('<tr>');
+
+            row.append($('<td>').text(app.id));
+            row.append($('<td>').text(fullName));
+            row.append($('<td>').text(app.personalInfo.email));
+            row.append($('<td>').text(app.fieldOfResearch || 'N/A'));
+            row.append($('<td>').text(professorNames));
+            row.append($('<td>').text(documentCount + ' doc(s)'));
+            row.append($('<td>').text(evaluationsCounts + ' evaluation(s)'));
+            row.append($('<td>').html(`<span class="status-badge status-${app.status}">${formatStatus(app.status)}</span>`));
+
+            // Action buttons
+            const actionsCell = $('<td>');
+            const actionsDiv = $('<div>').addClass('action-buttons');
+
+            const viewBtn = $('<button>')
+                .addClass('btn btn-view')
+                .text('View')
+                .on('click', function() {
+                    viewApplication(app);
+                });
+
+            const statusBtn = $('<button>')
+                .addClass('btn btn-status')
+                .text('Change Status')
+                .on('click', function() {
+                    openStatusModal(app);
+                });
+
+            actionsDiv.append(viewBtn, statusBtn);
+            actionsCell.append(actionsDiv);
+            row.append(actionsCell);
+
+            return row;
+        }
+
+        // Format status for display
+        function formatStatus(status) {
+            const statusMap = {
+                'PENDING': 'Pending',
+                'NOT_RECOMMENDED': 'Not Recommended',
+                'RECOMMENDED_NO_SUPERVISION': 'Rec. No Supervision',
+                'RECOMMENDED_NO_FUNDING': 'Rec. No Funding',
+                'RECOMMENDED_WITH_FUNDING': 'Rec. With Funding'
+            };
+            return statusMap[status] || status;
+        }
+
+        // View application details in modal
+        function viewApplication(app) {
+            currentApplication = app;
+
+            const fullName = app.personalInfo.firstName + ' ' + app.personalInfo.lastName;
+
+            $('#modalApplicantName').text(fullName);
+            $('#modalAppId').text('Application #' + app.id);
+
+            // Build modal body content
+            let modalContent = `
+                    <div class="detail-section">
+                        <div class="detail-grid">
+                            <div class="detail-label">Current Status:</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${app.status}">${formatStatus(app.status)}</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Personal Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-label">First Name:</div>
+                            <div class="detail-value">${app.personalInfo.firstName}</div>
+
+                            <div class="detail-label">Last Name:</div>
+                            <div class="detail-value">${app.personalInfo.lastName}</div>
+
+                            <div class="detail-label">Email:</div>
+                            <div class="detail-value">${app.personalInfo.email}</div>
+
+                            <div class="detail-label">Phone:</div>
+                            <div class="detail-value">${app.personalInfo.phoneNumber}</div>
+
+                            <div class="detail-label">Address:</div>
+                            <div class="detail-value">${app.personalInfo.address}</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Academic Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-label">Research Field:</div>
+                            <div class="detail-value">${app.fieldOfResearch || 'N/A'}</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Professors (${app.professors ? app.professors.length : 0})</h3>
+                `;
+
+            if (app.professors && app.professors.length > 0) {
+                $.each(app.professors, function(index, prof) {
+                    modalContent += `
+                            <div class="professor-card">
+                                <h4>${prof.firstName} ${prof.lastName}</h4>
+                                <p><strong>Email:</strong> ${prof.email}</p>
+                            </div>
+                        `;
+                });
+            } else {
+                modalContent += '<p style="color: #999;">No professors listed</p>';
+            }
+
+            modalContent += `
+                    </div>
+                    <div class="detail-section">
+                        <h3>Documents (${app.documents ? app.documents.length : 0})</h3>
+                `;
+
+            if (app.documents && app.documents.length > 0) {
+                $.each(app.documents, function(index, doc) {
+                    modalContent += `
+                            <div class="document-card">
+                                <h4>${doc.title}</h4>
+                                <p><strong>URL:</strong> <a href="${doc.link}" target="_blank">${doc.link}</a></p>
+                            </div>
+                        `;
+                });
+            } else {
+                modalContent += '<p style="color: #999;">No documents submitted</p>';
+            }
+
+            if (app.evaluations && app.evaluations.length > 0) {
+                $.each(app.evaluations, function(index, eval) {
+                    modalContent += `
+                            <div class="evaluation-card">
+                                <h4>${eval.professor}</h4>
+                                <p>Comments: ${eval.comments}</p>
+                                <p>Recommendation: ${eval.recommendation} </p>
+                            </div>
+                        `;
+                });
+            } else {
+                modalContent += '<p style="color: #999;">No evaluations submitted</p>';
+            }
+
+            modalContent += '</div>';
+
+            $('#modalBody').html(modalContent);
+            $('#viewModal').addClass('active');
+        }
+
+        // Open status change modal
+        function openStatusModal(app) {
+            currentApplication = app;
+            $('#newStatusSelect').val(app.status);
+            $('#statusModal').addClass('active');
+        }
+
+        // Close view modal
+        function closeViewModal() {
+            $('#viewModal').removeClass('active');
+            currentApplication = null;
+        }
+
+        // Close status modal
+        function closeStatusModal() {
+            $('#statusModal').removeClass('active');
+            currentApplication = null;
+        }
+
+        // Update application status
+        function updateApplicationStatus(appId, newStatus) {
+            const statusNames = {
+                'NOT_RECOMMENDED': 'not recommend',
+                'RECOMMENDED_NO_SUPERVISION': 'recommend without supervision',
+                'RECOMMENDED_NO_FUNDING': 'recommend without funding',
+                'RECOMMENDED_WITH_FUNDING': 'recommend with funding',
+                'PENDING': 'set as pending'
+            };
+
+            const confirmMessage = `Are you sure you want to ${statusNames[newStatus]} this application?`;
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            $.ajax({
+                url: `/api/applications/${appId}/status?status=${newStatus}`,
+                method: 'PUT',
+                success: function(response) {
+                    // Reload applications to reflect changes
+                    loadApplications();
+
+                    // Close modals
+                    closeViewModal();
+                    closeStatusModal();
+
+                    // Show success message
+                    alert(`Application status updated to: ${formatStatus(newStatus)}`);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating status:', error);
+                    alert('Failed to update application status. Please try again.');
+                }
+            });
+        }
+
+        // Filter applications
+        function filterApplications() {
+            const selectedStatus = $('#statusFilter').val();
+
+            let filtered = allApplications;
+
+            // Filter by status
+            if (selectedStatus !== '') {
+                filtered = filtered.filter(app => app.status === selectedStatus);
+            }
+
+            renderApplications(filtered);
+        }
+    });
+</script>
+</body>
+</html>
