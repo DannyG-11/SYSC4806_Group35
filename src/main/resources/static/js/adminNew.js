@@ -2,14 +2,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tableBody = document.querySelector("tbody");
     const popup = document.getElementById("reviewPopup");
 
+    const messageModal = document.getElementById("messageModal");
+    const messageBox = document.getElementById("messageBox");
+    const messageText = document.getElementById("messageText");
+    const messageClose = document.getElementById("messageClose");
+
+    function showMessage(text, type = "success") {
+        messageBox.className = type === "error" ? "error" : "success";
+        messageText.textContent = text;
+        messageModal.style.display = "flex";
+    }
+
+    messageClose.addEventListener("click", () => {
+        messageModal.style.display = "none";
+        location.reload();
+    });
+
     // Fetch all applications
     const res = await fetch("/api/applications");
     const applications = await res.json();
 
-    // Filter out applications that are available to professors
+    // Filter applications not yet available to professors
     const filteredApps = applications.filter(app => !app.availableToProfs);
 
-    // Build the table rows
+    // Build the table
     tableBody.innerHTML = filteredApps.map(app => `
         <tr>
             <td>${app.id}</td>
@@ -22,34 +38,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         </tr>
     `).join("");
 
-    // Attach event listeners to review buttons
+    // Event listeners for review buttons
     const reviewButtons = document.querySelectorAll(".review-btn");
 
     reviewButtons.forEach(btn => {
         btn.addEventListener("click", async () => {
             const id = btn.getAttribute("data-id");
-
             const res = await fetch(`/api/applications/${id}`);
             const data = await res.json();
 
-            // Build popup HTML
             popup.innerHTML = `
-                <button id="closePopup" style="float:right;">✖ Close</button>
+                <button id="closePopup">✖</button>
                 <h2>Application #${data.id}</h2>
-                
                 <h3>Personal Info</h3>
                 <p><b>Name:</b> ${data.personalInfo.firstName} ${data.personalInfo.lastName}</p>
                 <p><b>Email:</b> ${data.personalInfo.email}</p>
-                <p><b>Phone:</b> ${data.personalInfo.phoneNumber ?? "n/a"}</p>
-                <p><b>Address:</b> ${data.personalInfo.address ?? "n/a"}</p>
 
-                <h3>Desired Field of Research</h3>
+                <h3>Field of Research</h3>
                 <p>${data.fieldOfResearch}</p>
-
-                <h3>Professors</h3>
-                <ul>
-                    ${data.professors.map(p => `<li>${p.firstName} ${p.lastName} (${p.email})</li>`).join('')}
-                </ul>
 
                 <h3>Supporting Documents</h3>
                 <ul>
@@ -57,47 +63,34 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </ul>
 
                 <div style="margin-top:20px;">
-                    <button id="sendEvalBtn">Send For Evaluation</button>
-                    <button id="rejectBtn" style="margin-left:10px; background-color:#d9534f; color:white;">Reject Application</button>
+                    <button id="sendEvalBtn" class="popup-btn send">📤 Send For Evaluation</button>
+                    <button id="rejectBtn" class="popup-btn reject">❌ Reject Application</button>
                 </div>
             `;
 
             popup.style.display = "block";
             popup.scrollIntoView({ behavior: "smooth" });
 
-            // Close button
             document.getElementById("closePopup").addEventListener("click", () => {
                 popup.style.display = "none";
                 popup.innerHTML = "";
             });
 
-            // Send for evaluation button
             document.getElementById("sendEvalBtn").addEventListener("click", async () => {
-                if (confirm("Send this application for evaluation?")) {
-                    const response = await fetch(`/api/applications/${id}/request-evaluation`, {
-                        method: "POST"
-                    });
-                    if (response.ok) {
-                        alert("Application sent for evaluation!");
-                        location.reload();
-                    } else {
-                        alert("Failed to send for evaluation.");
-                    }
+                const response = await fetch(`/api/applications/${id}/request-evaluation`, { method: "POST" });
+                if (response.ok) {
+                    showMessage("✅ Application sent for evaluation!", "success");
+                } else {
+                    showMessage("❌ Failed to send for evaluation.", "error");
                 }
             });
 
-            // Reject button
             document.getElementById("rejectBtn").addEventListener("click", async () => {
-                if (confirm("Are you sure you want to reject this application?")) {
-                    const response = await fetch(`/api/applications/${id}/reject`, {
-                        method: "POST"
-                    });
-                    if (response.ok) {
-                        alert("Application rejected.");
-                        location.reload();
-                    } else {
-                        alert("Failed to reject application.");
-                    }
+                const response = await fetch(`/api/applications/${id}/reject`, { method: "POST" });
+                if (response.ok) {
+                    showMessage("❌ Application rejected.", "error");
+                } else {
+                    showMessage("⚠️ Failed to reject application.", "error");
                 }
             });
         });
