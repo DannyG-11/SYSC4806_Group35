@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Applications Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script th:src="@{/js/admin.js}"></script>
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
+</head>
+<body>
+
+<h1>Administrator Dashboard</h1>
+
+<div class="filter-container">
+    <label for="statusFilter" style="color:white; margin-right:10px;">Filter by Status:</label>
+    <select id="statusFilter">
+        <option value="NEW">New</option>
+        <option value="PENDING">Pending</option>
+        <option value="EVALUATED">Evaluated</option>
+    </select>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Applicant Name</th>
+        <th>Email</th>
+        <th>Field of Research</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="reviewPopup"></div>
+
+<!-- Modal for success/error messages -->
+<div id="messageModal">
+    <div id="messageBox">
+        <p id="messageText"></p>
+        <button id="messageClose">OK</button>
+    </div>
+</div>
+
+</body>
+</html>

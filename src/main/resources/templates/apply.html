@@ -423,8 +423,9 @@
             div.className = 'document-item';
             div.innerHTML = `
                     <div class="document-info">
-                        <h4>${doc.title}</h4>
+                        <h4>${doc.title})</h4>
                         <p>${doc.link}</p>
+                        ${doc.description ? `<p style="font-size: 13px; margin-top: 5px;">${doc.description}</p>` : ''}
                     </div>
                     <button class="remove-btn" onclick="removeDocument(${index})">Remove</button>
                 `;
