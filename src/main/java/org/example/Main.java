@@ -1,8 +1,5 @@
 package org.example;
 
-import org.example.models.ApplicantPersonalInfo;
-import org.example.models.ApplicationFile;
-import org.example.models.Professor;
 import org.example.repositories.ApplicationFileRepository;
 import org.example.repositories.ProfessorRepository;
 import org.springframework.boot.CommandLineRunner;
