@@ -1,35 +1,87 @@
+/**
+ * Application Review Dashboard Script
+ * ------------------------------------
+ * This script handles the front-end logic for displaying, filtering,
+ * and reviewing student applications. It supports the following workflow:
+ *   1. Fetch all applications from the backend.
+ *   2. Filter applications by status (NEW, PENDING, EVALUATED).
+ *   3. Display details and allow reviewers to take actions:
+ *        - Send for evaluation
+ *        - Approve / Reject applications
+ *        - View submitted evaluations
+ */
+
 document.addEventListener("DOMContentLoaded", async () => {
+
+    /* ===============================
+       DOM ELEMENT REFERENCES
+       =============================== */
     const tableBody = document.querySelector("tbody");
     const popup = document.getElementById("reviewPopup");
 
+    // Message modal elements
     const messageModal = document.getElementById("messageModal");
     const messageBox = document.getElementById("messageBox");
     const messageText = document.getElementById("messageText");
     const messageClose = document.getElementById("messageClose");
+
+    // Application filter dropdown
     const statusFilter = document.getElementById("statusFilter");
 
+    // Cached list of applications from the backend
     let applications = [];
 
+    /* ===============================
+       MESSAGE HANDLING
+       =============================== */
+
+    /**
+     * Displays a temporary message modal (success or error).
+     * @param {string} text - The message to display.
+     * @param {"success"|"error"} [type="success"] - Message type.
+     */
     function showMessage(text, type = "success") {
         messageBox.className = type === "error" ? "error" : "success";
         messageText.textContent = text;
         messageModal.style.display = "flex";
     }
 
+    // Closes the message modal and reloads the page
     messageClose.addEventListener("click", () => {
         messageModal.style.display = "none";
         location.reload();
     });
 
-    const res = await fetch("/api/applications");
-    applications = await res.json();
+    /* ===============================
+       INITIAL DATA FETCH
+       =============================== */
 
-    renderTable("NEW"); // default view
+    try {
+        const res = await fetch("/api/applications");
+        applications = await res.json();
+    } catch (err) {
+        console.error("Error fetching applications:", err);
+        showMessage("⚠️ Failed to load applications.", "error");
+        return;
+    }
 
+    // Display default view (NEW applications)
+    renderTable("NEW");
+
+    // Filter change handler
     statusFilter.addEventListener("change", () => {
         renderTable(statusFilter.value);
     });
 
+    /* ===============================
+       APPLICATION STATUS LOGIC
+       =============================== */
+
+    /**
+     * Determines the current status of an application.
+     * @param {Object} app - The application object.
+     * @returns {"NEW"|"PENDING"|"EVALUATED"|"UNKNOWN"}
+     */
     function getStatus(app) {
         if (!app.availableToProfs) return "NEW";
         if (app.availableToProfs && (!app.evaluations || app.evaluations.length === 0)) return "PENDING";
@@ -37,9 +89,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         return "UNKNOWN";
     }
 
+    /* ===============================
+       TABLE RENDERING
+       =============================== */
+
+    /**
+     * Renders the applications table based on a status filter.
+     * @param {string} filter - One of "NEW", "PENDING", "EVALUATED".
+     */
     function renderTable(filter) {
         const filteredApps = applications.filter(app => getStatus(app) === filter);
 
+        // Build HTML table rows dynamically
         tableBody.innerHTML = filteredApps.map(app => `
             <tr>
                 <td>${app.id}</td>
@@ -53,15 +114,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         attachReviewListeners(filter);
     }
 
+    /* ===============================
+       REVIEW POPUP HANDLING
+       =============================== */
+
+    /**
+     * Attaches event listeners to dynamically generated "Review" buttons.
+     * Opens a popup showing full application details and actions.
+     * @param {string} filter - The current application status filter.
+     */
     function attachReviewListeners(filter) {
         document.querySelectorAll(".review-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
                 const id = btn.getAttribute("data-id");
+
+                // Fetch full application details
                 const res = await fetch(`/api/applications/${id}`);
                 const data = await res.json();
 
                 popup.innerHTML = `<button id="closePopup">✖</button>`;
 
+                /* -------------------------------
+                   VIEW FOR EVALUATED APPLICATIONS
+                   ------------------------------- */
                 if (filter === "EVALUATED") {
                     popup.innerHTML += `
                         <h2>Application #${data.id}</h2>
@@ -82,18 +157,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                         </div>
                     `;
 
+                    // Approve application
                     document.getElementById("approveBtn").addEventListener("click", async () => {
                         const response = await fetch(`/api/applications/${id}/approve`, { method: "POST" });
                         response.ok ? showMessage("✅ Application approved!") : showMessage("❌ Failed to approve.", "error");
                     });
 
+                    // Reject after evaluation
                     document.getElementById("rejectEvalBtn").addEventListener("click", async () => {
                         const response = await fetch(`/api/applications/${id}/reject`, { method: "POST" });
                         response.ok ? showMessage("❌ Application rejected.") : showMessage("⚠️ Failed to reject.", "error");
                     });
 
+                    /* -------------------------------
+                       VIEW FOR NEW OR PENDING APPLICATIONS
+                       ------------------------------- */
                 } else {
-                    // NEW or PENDING
                     popup.innerHTML += `
                         <h2>Application #${data.id}</h2>
                         <h3>Personal Info</h3>
@@ -111,6 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         </div>
                     `;
 
+                    // "Send for Evaluation" and "Reject" buttons only for NEW apps
                     if (filter === "NEW") {
                         document.getElementById("sendEvalBtn").addEventListener("click", async () => {
                             const response = await fetch(`/api/applications/${id}/request-evaluation`, { method: "POST" });
@@ -124,9 +204,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 }
 
+                // Display popup
                 popup.style.display = "block";
                 popup.scrollIntoView({ behavior: "smooth" });
 
+                // Close popup handler
                 document.getElementById("closePopup").addEventListener("click", () => {
                     popup.style.display = "none";
                     popup.innerHTML = "";
