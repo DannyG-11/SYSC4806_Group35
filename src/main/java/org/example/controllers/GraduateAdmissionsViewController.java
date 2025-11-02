@@ -20,4 +20,9 @@ public class GraduateAdmissionsViewController {
     public String submitApplication(){
         return "apply";
     }
+
+    @GetMapping("/p")
+    public String addProfessors(){
+        return "professors";
+    }
 }

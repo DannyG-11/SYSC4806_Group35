@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .required {
+            color: #e74c3c;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .button {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .button-secondary {
+            background: #95a5a6;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .professor-item,
+        .document-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .professor-info,
+        .document-info {
+            flex: 1;
+        }
+        .professor-info h4,
+        .document-info h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .professor-info p,
+        .document-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+        .add-section {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .add-section h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #95a5a6;
+        }
+        .submit-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .success-modal.active {
+            display: flex;
+        }
+        .success-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 500px;
+        }
+        .success-icon {
+            font-size: 60px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        .success-content h2 {
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        .success-content p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Professors</h1>
+    </div>
+
+    <div class="content">
+        <form id="applicationForm">
+
+            <!-- Professors -->
+            <h2 class="section-title">Professors <span class="required">*</span></h2>
+
+            <div id="professorsList">
+                <p class="empty-state">No professors added yet. Add professors below.</p>
+            </div>
+
+            <div class="add-section">
+                <h4>Add Professor</h4>
+                <div class="form-group">
+                    <label>Professor First Name</label>
+                    <input type="text" id="profFirstName">
+                </div>
+                <div class="form-group">
+                    <label>Professor Last Name</label>
+                    <input type="text" id="profLastName">
+                </div>
+                <div class="form-group">
+                    <label>Professor Email</label>
+                    <input type="email" id="profEmail">
+                </div>
+                <button type="submit" class="button" id="addProfessorBtn">Add Professor</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById("addProfessorBtn").addEventListener("click", async () => {
+        const firstName = document.getElementById('profFirstName').value;
+        const lastName = document.getElementById('profLastName').value;
+        const email = document.getElementById('profEmail').value;
+
+        if (!firstName || !lastName || !email) {
+            alert('Please fill in all professor fields');
+            return;
+        }
+
+        const professor = { firstName, lastName, email };
+
+        // Add professor
+        try {
+            const response = await fetch('professors', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(professor)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add professor');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to add professor. Please try again.');
+        }
+
+        // Clear inputs
+        document.getElementById('profFirstName').value = '';
+        document.getElementById('profLastName').value = '';
+        document.getElementById('profEmail').value = '';
+
+        renderProfessors();
+    });
+
+    // Render professors list
+    async function renderProfessors() {
+        const container = document.getElementById('professorsList');
+        let professors = [];
+
+         // Get professors
+         try {
+            const response = await fetch('/professors');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            professors = data._embedded?.professors;
+
+
+            if (professors.length === 0) {
+                container.innerHTML = '<p class="empty-state">No professors added yet. Add at least one professor below.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            professors.forEach((prof, index) => {
+                const div = document.createElement('div');
+                div.className = 'professor-item';
+                div.innerHTML = `
+                        <div class="professor-info">
+                            <h4>${prof.firstName} ${prof.lastName}</h4>
+                            <p style="font-size: 13px;">${prof.email}</p>
+                        </div>
+                        <button class="remove-btn" onclick="removeProfessor('${prof._links.self.href}')">Remove</button>
+                    `;
+                container.appendChild(div);
+            });
+         } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Remove professor
+    async function removeProfessor(link) {
+        try {
+            const response = await fetch(link, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete professor');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to delete professor. Please try again.');
+        }
+    }
+
+    renderProfessors();
+</script>
+</body>
+</html>
