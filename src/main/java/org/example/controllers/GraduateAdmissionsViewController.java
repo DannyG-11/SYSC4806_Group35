@@ -31,17 +31,7 @@ public class GraduateAdmissionsViewController {
         return "apply";
     }
 
-
-    @GetMapping("/professor")
-    public String professorDashboard(){
-        return "professor";
-    }
-
-    @GetMapping("/applications")
-    public String viewApplications(){
-        return "applications";
-    }
-    @GetMapping("/viewprofessors")
+    @GetMapping("/addprofessors")
     public String addProfessors(){
         return "professors";
     }
