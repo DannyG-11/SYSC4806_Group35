@@ -1,19 +1,16 @@
 package org.example.controllers;
 
+import org.example.repositories.ApplicationFileRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class GraduateAdmissionsViewController {
 
-    public GraduateAdmissionsViewController() {
-    }
+    private final ApplicationFileRepository applicationFileRepository;
 
-    @GetMapping("/greeting")
-    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "greeting";
+    public GraduateAdmissionsViewController(ApplicationFileRepository applicationFileRepository) {
+        this.applicationFileRepository = applicationFileRepository;
     }
 
     @GetMapping("/apply")
@@ -25,4 +22,12 @@ public class GraduateAdmissionsViewController {
     public String addProfessors(){
         return "professors";
     }
+
+    @GetMapping("/evaluations")
+    public String evaluatedApplications(){
+        return "evaluations";
+    }
+
+    @GetMapping("/admin")
+    public String adminDashboard() { return "admin"; }
 }
