@@ -264,24 +264,7 @@
             <h2 class="section-title">Professors <span class="required">*</span></h2>
 
             <div id="professorsList">
-                <p class="empty-state">No professors added yet. Add at least one professor below.</p>
-            </div>
-
-            <div class="add-section">
-                <h4>Add Professor</h4>
-                <div class="form-group">
-                    <label>Professor First Name</label>
-                    <input type="text" id="profFirstName">
-                </div>
-                <div class="form-group">
-                    <label>Professor Last Name</label>
-                    <input type="text" id="profLastName">
-                </div>
-                <div class="form-group">
-                    <label>Professor Email</label>
-                    <input type="email" id="profEmail">
-                </div>
-                <button type="button" class="button" onclick="addProfessor()">Add Professor</button>
+                <p class="empty-state">No professors available.</p>
             </div>
 
             <!-- Research Field -->
@@ -336,56 +319,50 @@
     let professors = [];
     let documents = [];
 
-    // Add professor to list
-    function addProfessor() {
-        const firstName = document.getElementById('profFirstName').value;
-        const lastName = document.getElementById('profLastName').value;
-        const email = document.getElementById('profEmail').value;
-
-        if (!firstName || !lastName || !email) {
-            alert('Please fill in all professor fields');
-            return;
-        }
-
-        const professor = { firstName, lastName, email };
-        professors.push(professor);
-
-        // Clear inputs
-        document.getElementById('profFirstName').value = '';
-        document.getElementById('profLastName').value = '';
-        document.getElementById('profEmail').value = '';
-
-        renderProfessors();
-    }
-
-    // Render professors list
-    function renderProfessors() {
+    async function renderProfessors() {
         const container = document.getElementById('professorsList');
+        let allProfessors = [];
 
-        if (professors.length === 0) {
-            container.innerHTML = '<p class="empty-state">No professors added yet. Add at least one professor below.</p>';
-            return;
+         // Get professors
+         try {
+            const response = await fetch('/professors');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            allProfessors = data._embedded?.professors;
+
+
+            if (allProfessors.length === 0) {
+                container.innerHTML = '<p class="empty-state">No professors added yet. Add at least one professor below.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            allProfessors.forEach((prof, index) => {
+                const div = document.createElement('div');
+                div.className = 'professor-item';
+                div.innerHTML = `
+                        <div class="professor-info">
+                            <h4>${prof.firstName} ${prof.lastName}</h4>
+                            <p style="font-size: 13px;">${prof.email}</p>
+                        </div>
+                        <input type="checkbox" onclick="selectProfessor('${prof._links.self.href}')"/>
+                    `;
+                container.appendChild(div);
+            });
+         } catch (error) {
+            console.error('Error:', error);
         }
-
-        container.innerHTML = '';
-        professors.forEach((prof, index) => {
-            const div = document.createElement('div');
-            div.className = 'professor-item';
-            div.innerHTML = `
-                    <div class="professor-info">
-                        <h4>${prof.firstName} ${prof.lastName}</h4>
-                        <p style="font-size: 13px;">${prof.email}</p>
-                    </div>
-                    <button class="remove-btn" onclick="removeProfessor(${index})">Remove</button>
-                `;
-            container.appendChild(div);
-        });
     }
 
-    // Remove professor
-    function removeProfessor(index) {
-        professors.splice(index, 1);
-        renderProfessors();
+    function selectProfessor(prof){
+        const index = professors.indexOf(prof);
+
+        if(index == -1){
+            professors.push(prof);
+        } else {
+            professors.splice(index, 1);
+        }
     }
 
     // Add document to list
@@ -467,8 +444,10 @@
             documents: documents
         };
 
+        console.log(applicationData);
+
         try {
-            const response = await fetch('/api/applications', {
+            const response = await fetch('applicationFiles', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -489,6 +468,8 @@
             submitBtn.textContent = 'Submit Application';
         }
     });
+
+    renderProfessors();
 </script>
 </body>
 </html>

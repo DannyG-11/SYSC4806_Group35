@@ -21,7 +21,7 @@ public class GraduateAdmissionsViewController {
         return "apply";
     }
 
-    @GetMapping("/p")
+    @GetMapping("/viewprofessors")
     public String addProfessors(){
         return "professors";
     }
