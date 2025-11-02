@@ -1,0 +1,74 @@
+erDiagram
+%% ===========================
+%% ENTITIES
+%% ===========================
+
+    APPLICANT_PERSONAL_INFO {
+        bigint ID PK
+        string ADDRESS
+        string EMAIL
+        string FIRST_NAME
+        string LAST_NAME
+        string PHONE_NUMBER
+    }
+
+    APPLICATION_FILE {
+        bigint ID PK
+        boolean AVAILABLE_TO_PROFS
+        string FIELD_OF_RESEARCH
+        bigint PERSONAL_INFO_ID FK
+    }
+
+    DOCUMENT {
+        bigint ID PK
+        string LINK
+        string TITLE
+        bigint APPLICATION_ID FK
+    }
+
+    PROFESSOR {
+        bigint ID PK
+        string EMAIL
+        string FIRST_NAME
+        string LAST_NAME
+    }
+
+    PROFESSOR_EVALUATION {
+        bigint ID PK
+        string COMMENTS
+        enum RECOMMENDATION
+        bigint APPLICATION_FILE_ID FK
+        bigint PROFESSOR_ID FK
+    }
+
+    APPLICATION_FILE_PROFESSORS {
+        bigint APPLICATION_FILE_ID FK
+        bigint PROFESSORS_ID FK
+    }
+
+    APPLICATION_FILE_EVALUATIONS {
+        bigint APPLICATION_FILE_ID FK
+        bigint EVALUATIONS_ID FK
+    }
+
+%% ===========================
+%% RELATIONSHIPS (JPA-style)
+%% ===========================
+
+%% Applicant ↔ ApplicationFile (OneToMany)
+    APPLICANT_PERSONAL_INFO ||--o{ APPLICATION_FILE : "1-to-many (Applicant has Applications)"
+
+%% ApplicationFile ↔ Document (OneToMany)
+    APPLICATION_FILE ||--o{ DOCUMENT : "1-to-many (Application has Documents)"
+
+%% ApplicationFile ↔ ProfessorEvaluation (OneToMany)
+    APPLICATION_FILE ||--o{ PROFESSOR_EVALUATION : "1-to-many (Application has Evaluations)"
+
+%% Professor ↔ ProfessorEvaluation (OneToMany)
+    PROFESSOR ||--o{ PROFESSOR_EVALUATION : "1-to-many (Professor writes Evaluations)"
+
+%% ApplicationFile ↔ Professor (ManyToMany via APPLICATION_FILE_PROFESSORS)
+    APPLICATION_FILE }o--o{ PROFESSOR : "many-to-many (shared via ApplicationFile_Professors)"
+
+%% ApplicationFile ↔ ProfessorEvaluation (ManyToMany via APPLICATION_FILE_EVALUATIONS)
+    APPLICATION_FILE }o--o{ PROFESSOR_EVALUATION : "many-to-many (linked via ApplicationFile_Evaluations)"
