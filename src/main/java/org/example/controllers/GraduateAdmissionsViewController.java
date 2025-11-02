@@ -18,6 +18,11 @@ public class GraduateAdmissionsViewController {
         return "apply";
     }
 
+    @GetMapping("/viewprofessors")
+    public String addProfessors(){
+        return "professors";
+    }
+
     @GetMapping("/evaluations")
     public String evaluatedApplications(){
         return "evaluations";
