@@ -116,7 +116,7 @@ mvn test
 
 Group 35 - SYSC 4806A Software Engineering Lab
 - Amr Abdel-Rahman 101195243
-- Colin Chen 
+- Colin Chen 101229162
 - Daniel Gaudet
 - David Exinor
 - Sebi Magyar-Samoila
