@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Evaluate Applications</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/evaluations.js}"></script>
+    <link th:href="@{/css/evaluations.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Evaluate Applications</h1>
+        <p>Review and manage submitted research position applications</p>
+    </div>
+
+    <div class="filter-section">
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter">
+            <option value="">All Applications</option>
+            <option value="PENDING">Pending</option>
+            <option value="NOT_RECOMMENDED">Not Recommended</option>
+            <option value="RECOMMENDED_NO_SUPERVISION">Recommended (No Supervision)</option>
+            <option value="RECOMMENDED_NO_FUNDING">Recommended (No Funding)</option>
+            <option value="RECOMMENDED_WITH_FUNDING">Recommended (With Funding)</option>
+        </select>
+
+        <label for="professorFilter" style="margin-left: 20px;">Filter by Professor:</label>
+        <select id="professorFilter">
+            <option value="">All Professors</option>
+            <!-- Populated dynamically by jQuery -->
+        </select>
+
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Applicant Name</th>
+                <th>Email</th>
+                <th>Research Field</th>
+                <th>Professors</th>
+                <th>Documents</th>
+                <th>Evaluations</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="applicationsTableBody">
+            <tr>
+                <td colspan="9">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading applications...</p>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for viewing application details -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalApplicantName"></h2>
+            <div class="app-id" id="modalAppId"></div>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Content populated by jQuery -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-close btn-large" id="closeModalBtn">Close</button>
+            <div class="modal-actions">
+                <button class="btn btn-not-recommended btn-large" id="modalNotRecommendedBtn">Not Recommended</button>
+                <button class="btn btn-no-supervision btn-large" id="modalNoSupervisionBtn">Rec. No Supervision</button>
+                <button class="btn btn-no-funding btn-large" id="modalNoFundingBtn">Rec. No Funding</button>
+                <button class="btn btn-with-funding btn-large" id="modalWithFundingBtn">Rec. With Funding</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for changing status -->
+<div class="modal-overlay" id="statusModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Change Application Status</h2>
+        </div>
+        <div class="modal-body">
+            <div class="detail-section">
+                <label for="newStatusSelect" style="display: block; margin-bottom: 10px; font-weight: bold;">Select New Status:</label>
+                <select id="newStatusSelect" class="status-selection">
+                    <option value="PENDING">Pending</option>
+                    <option value="NOT_RECOMMENDED">Not Recommended for Admission</option>
+                    <option value="RECOMMENDED_NO_SUPERVISION">Recommend but Not Interested in Supervision</option>
+                    <option value="RECOMMENDED_NO_FUNDING">Recommend but No Funding</option>
+                    <option value="RECOMMENDED_WITH_FUNDING">Recommend with Funding</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-close btn-large" id="closeStatusModalBtn">Cancel</button>
+            <div class="modal-actions">
+                <button class="btn btn-with-funding btn-large" id="confirmStatusChangeBtn">Update Status</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

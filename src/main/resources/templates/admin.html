@@ -1,80 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin Dashboard - Graduate Admissions System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            padding: 40px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .header h1 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .button {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px;
-        }
-        .button:hover {
-            opacity: 0.9;
-        }
-        .placeholder {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-        .placeholder h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-    </style>
+    <meta charset="UTF-8"/>
+    <title>Applications Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script th:src="@{/js/admin.js}"></script>
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>Admin Dashboard</h1>
-        <a href="/" class="button">Return to Home</a>
-    </div>
-    <div class="placeholder">
-        <h2>🚧 Page Under Development</h2>
-        <p>This page is being developed by the team. It will include functionality for:</p>
-        <ul style="list-style: none; padding: 20px 0;">
-            <li>• Reviewing and managing applications</li>
-            <li>• Marking applications as available for professor evaluation</li>
-            <li>• Setting evaluation deadlines</li>
-            <li>• Viewing application status</li>
-        </ul>
+
+<h1>Administrator Dashboard</h1>
+
+<div class="filter-container">
+    <label for="statusFilter" style="color:white; margin-right:10px;">Filter by Status:</label>
+    <select id="statusFilter">
+        <option value="NEW">New</option>
+        <option value="PENDING">Pending</option>
+        <option value="EVALUATED">Evaluated</option>
+    </select>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Applicant Name</th>
+        <th>Email</th>
+        <th>Field of Research</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="reviewPopup"></div>
+
+<!-- Modal for success/error messages -->
+<div id="messageModal">
+    <div id="messageBox">
+        <p id="messageText"></p>
+        <button id="messageClose">OK</button>
     </div>
 </div>
+
 </body>
 </html>
-
