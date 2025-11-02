@@ -7,6 +7,7 @@ import org.example.repositories.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.example.models.RecommendationStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +76,39 @@ public class GraduateAdmissionsController {
 
         applicationFileRepo.deleteById(id);
         return ResponseEntity.ok("Application rejected.");
+    }
+
+    // Get applications by status
+    @GetMapping("/status/{status}")
+    public Iterable<ApplicationFile> getApplicationsByStatus(@PathVariable String status) {
+        try {
+            RecommendationStatus recStatus = RecommendationStatus.valueOf(status);
+            return applicationFileRepo.findByStatus(recStatus);
+        } catch (IllegalArgumentException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    // Update application status
+    @PutMapping("/{id}/status")
+    public ApplicationFile updateStatus(@PathVariable Long id, @RequestParam String status) {
+        Optional<ApplicationFile> applicationOpt = applicationFileRepo.findById(id);
+        if (applicationOpt.isPresent()) {
+            ApplicationFile application = applicationOpt.get();
+            try {
+                RecommendationStatus recStatus = RecommendationStatus.valueOf(status);
+                application.setStatus(recStatus);
+                return applicationFileRepo.save(application);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    // Delete an application
+    @DeleteMapping("/{id}")
+    public void deleteApplication(@PathVariable Long id) {
+        applicationFileRepo.deleteById(id);
     }
 }

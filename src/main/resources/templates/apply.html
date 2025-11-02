@@ -289,7 +289,7 @@
 
             <div class="form-group">
                 <label>Desired Research Field</label>
-                <input type="text" id="desiredField">
+                <input type="text" id="fieldOfResearch">
             </div>
 
             <!-- Documents -->
@@ -389,15 +389,15 @@
 
     // Add document to list
     function addDocument() {
-        const fileName = document.getElementById('docFileName').value;
-        const fileUrl = document.getElementById('docFileUrl').value;
+        const title = document.getElementById('docFileName').value;
+        const link = document.getElementById('docFileUrl').value;
 
-        if (!fileName || !fileUrl) {
+        if (!title || !link) {
             alert('Please provide a file name and URL');
             return;
         }
 
-        const newDoc = { title: fileName, link: fileUrl };
+        const newDoc = { title, link };
         documents.push(newDoc);
 
         // Clear inputs
@@ -422,8 +422,8 @@
             div.className = 'document-item';
             div.innerHTML = `
                     <div class="document-info">
-                        <h4>${doc.title}</h4>
-                        <p>${doc.link}</p>
+                        <h4>${doc.fileName} (${doc.fileType})</h4>
+                        <p>${doc.fileUrl}</p>
                         ${doc.description ? `<p style="font-size: 13px; margin-top: 5px;">${doc.description}</p>` : ''}
                     </div>
                     <button class="remove-btn" onclick="removeDocument(${index})">Remove</button>
@@ -461,7 +461,7 @@
                 phoneNumber: document.getElementById('phoneNumber').value,
                 address: document.getElementById('address').value
             },
-            fieldOfResearch: document.getElementById('desiredField').value,
+            desiredField: document.getElementById('desiredField').value,
             professors: professors,
             documents: documents
         };
@@ -478,7 +478,7 @@
             if (response.ok) {
                 document.getElementById('successModal').classList.add('active');
             } else {
-                throw new Error('Failed to submit application');
+                new Error('Failed to submit application');
             }
         } catch (error) {
             console.error('Error:', error);
