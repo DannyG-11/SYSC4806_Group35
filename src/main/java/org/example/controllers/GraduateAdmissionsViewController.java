@@ -28,6 +28,6 @@ public class GraduateAdmissionsViewController {
     @GetMapping("/adminNew")
     public String evaluateNewApplications(Model model){
         model.addAttribute("applications", applicationFileRepository.findAll());
-        return "adminNew";
+        return "admin";
     }
 }
