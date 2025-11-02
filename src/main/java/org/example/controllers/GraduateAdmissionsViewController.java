@@ -24,5 +24,5 @@ public class GraduateAdmissionsViewController {
     }
 
     @GetMapping("/admin")
-    public String adminDashboard(Model model) { return "admin"; }
+    public String adminDashboard() { return "admin"; }
 }
