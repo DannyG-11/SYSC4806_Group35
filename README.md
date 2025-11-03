@@ -1,5 +1,13 @@
-# SYSC 4806 Team 35
-Teammembers: Colin Chen, Danny Gaudet, David Exinor, Sebi Magyar-Samoila, Amr Abdel-Rahman
+# SYSC 4806 Team 35: Graduate Admissions Management System
+
+To use the system, access here: https://sysc4806-group35.azurewebsites.net/
+
+Team members: 
+- Amr Abdel-Rahman 101195243
+- Colin Chen 101229162
+- Daniel Gaudet 101231140
+- David Exinor 10118298
+- Sebi Magyar-Samoila 101223588
 
 # Current Project State:
 - Database schema has been created and set up
@@ -7,7 +15,7 @@ Teammembers: Colin Chen, Danny Gaudet, David Exinor, Sebi Magyar-Samoila, Amr Ab
 - Admin page has functionality for new, pending, and evaluated requests.
 - Request page allows users to create a new request with filler for documents and assigned professors.
 - Professors can view requests assigned to them and make decisions.
-- Tests exist for repositories, models, and controllers.'
+- Tests exist for repositories, models, and controllers.
 
 # Upcoming Sprint:
 - Each user should be able to perform each of their main use cases.
@@ -16,5 +24,30 @@ Teammembers: Colin Chen, Danny Gaudet, David Exinor, Sebi Magyar-Samoila, Amr Ab
 - Begin implementation of websockets for improved performance.
 - Separate admin page further for improved UX.
 
-# Database schema
-<img width="1336" height="1164" alt="image" src="https://github.com/user-attachments/assets/17a9c695-bb5c-4f83-8075-f486f201433d" />
+## UML Class Diagrams
+
+The models are documented in the `/diagrams` folder:
+- **UML Class Diagram**: [diagrams/M1-UML-Class-Diagram.mmd](diagrams/M1-UML-Class-Diagram.mmd)
+- **Database Schema Diagram**: [diagrams/M1-Database-Scema-Diagram.mmd](diagrams/M1-Database-Scema-Diagram.mmd)
+
+These diagrams are kept in sync with the code and updated as features are added.
+
+### Installation to run locally
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/DannyG-11/SYSC4806_Group35.git
+   ```
+
+2. Build the project:
+   ```bash
+   mvn clean install
+   ```
+
+3. Run the application:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+4. Access the application:
+   - Navigate to `http://localhost:8080` in your web browser
