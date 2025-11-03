@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Graduate Application</title>
+    <title>Professors</title>
     <style>
         * {
             margin: 0;
@@ -222,106 +222,82 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>Graduate Application</h1>
+        <h1>Professors</h1>
     </div>
 
     <div class="content">
         <form id="applicationForm">
-            <!-- Personal Information -->
-            <h2 class="section-title">Personal Information</h2>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>First Name <span class="required">*</span></label>
-                    <input type="text" id="firstName" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Last Name <span class="required">*</span></label>
-                    <input type="text" id="lastName" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Email Address <span class="required">*</span></label>
-                <input type="email" id="email" required>
-                <p class="help-text">We'll use this email to contact you about your application</p>
-            </div>
-
-            <div class="form-group">
-                <label>Phone Number <span class="required">*</span></label>
-                <input type="tel" id="phoneNumber" required>
-                <p class="help-text">Format: 123-456-7890</p>
-            </div>
-
-            <div class="form-group">
-                <label>Address <span class="required">*</span></label>
-                <textarea id="address" required></textarea>
-                <p class="help-text">Full mailing address including city, province, and postal code. Ex: 123 Sussex drive, Ottawa, Ontario, J1C3J4 </p>
-            </div>
 
             <!-- Professors -->
             <h2 class="section-title">Professors <span class="required">*</span></h2>
 
             <div id="professorsList">
-                <p class="empty-state">No professors available.</p>
-            </div>
-
-            <!-- Research Field -->
-            <h2 class="section-title">Research Field <span class="required">*</span></h2>
-
-            <div class="form-group">
-                <label>Desired Research Field</label>
-                <input type="text" id="fieldOfResearch">
-            </div>
-
-            <!-- Documents -->
-            <h2 class="section-title">Supporting Documents</h2>
-
-            <div id="documentsList">
-                <p class="empty-state">No documents added yet. Add your supporting documents below.</p>
+                <p class="empty-state">No professors added yet. Add professors below.</p>
             </div>
 
             <div class="add-section">
-                <h4>Add Document</h4>
+                <h4>Add Professor</h4>
                 <div class="form-group">
-                    <label>File Name</label>
-                    <input type="text" id="docFileName">
+                    <label>Professor First Name</label>
+                    <input type="text" id="profFirstName">
                 </div>
                 <div class="form-group">
-                    <label>File URL/Link</label>
-                    <input type="text" id="docFileUrl">
+                    <label>Professor Last Name</label>
+                    <input type="text" id="profLastName">
                 </div>
-                <button type="button" class="button" onclick="addDocument()">Add Document</button>
-            </div>
-
-            <!-- Submit -->
-            <div class="submit-section">
-                <button type="submit" class="button" id="submitBtn">
-                    Submit Application
-                </button>
+                <div class="form-group">
+                    <label>Professor Email</label>
+                    <input type="email" id="profEmail">
+                </div>
+                <button type="submit" class="button" id="addProfessorBtn">Add Professor</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Success Modal -->
-<div class="success-modal" id="successModal">
-    <div class="success-content">
-        <div class="success-icon">✓</div>
-        <h2>Application Submitted!</h2>
-        <p>Thank you for your application. We have received your information and will review it shortly.</p>
-        <button class="button" onclick="window.location.href='/'">Return to Home</button>
-    </div>
-</div>
-
 <script>
-    let professors = [];
-    let documents = [];
+    document.getElementById("addProfessorBtn").addEventListener("click", async () => {
+        const firstName = document.getElementById('profFirstName').value;
+        const lastName = document.getElementById('profLastName').value;
+        const email = document.getElementById('profEmail').value;
 
+        if (!firstName || !lastName || !email) {
+            alert('Please fill in all professor fields');
+            return;
+        }
+
+        const professor = { firstName, lastName, email };
+
+        // Add professor
+        try {
+            const response = await fetch('professors', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(professor)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add professor');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to add professor. Please try again.');
+        }
+
+        // Clear inputs
+        document.getElementById('profFirstName').value = '';
+        document.getElementById('profLastName').value = '';
+        document.getElementById('profEmail').value = '';
+
+        renderProfessors();
+    });
+
+    // Render professors list
     async function renderProfessors() {
         const container = document.getElementById('professorsList');
-        let allProfessors = [];
+        let professors = [];
 
          // Get professors
          try {
@@ -329,16 +305,16 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
-            allProfessors = data._embedded?.professors;
+            professors = data._embedded?.professors;
 
 
-            if (allProfessors.length === 0) {
+            if (professors.length === 0) {
                 container.innerHTML = '<p class="empty-state">No professors added yet. Add at least one professor below.</p>';
                 return;
             }
 
             container.innerHTML = '';
-            allProfessors.forEach((prof, index) => {
+            professors.forEach((prof, index) => {
                 const div = document.createElement('div');
                 div.className = 'professor-item';
                 div.innerHTML = `
@@ -346,7 +322,7 @@
                             <h4>${prof.firstName} ${prof.lastName}</h4>
                             <p style="font-size: 13px;">${prof.email}</p>
                         </div>
-                        <input type="checkbox" onclick="selectProfessor('${prof._links.self.href}')"/>
+                        <button class="remove-btn" onclick="removeProfessor('${prof._links.self.href}')">Remove</button>
                     `;
                 container.appendChild(div);
             });
@@ -355,119 +331,21 @@
         }
     }
 
-    function selectProfessor(prof){
-        const index = professors.indexOf(prof);
-
-        if(index == -1){
-            professors.push(prof);
-        } else {
-            professors.splice(index, 1);
-        }
-    }
-
-    // Add document to list
-    function addDocument() {
-        const title = document.getElementById('docFileName').value;
-        const link = document.getElementById('docFileUrl').value;
-
-        if (!title || !link) {
-            alert('Please provide a file name and URL');
-            return;
-        }
-
-        const newDoc = { title, link };
-        documents.push(newDoc);
-
-        // Clear inputs
-        document.getElementById('docFileName').value = '';
-        document.getElementById('docFileUrl').value = '';
-
-        renderDocuments();
-    }
-
-    // Render documents list
-    function renderDocuments() {
-        const container = document.getElementById('documentsList');
-
-        if (documents.length === 0) {
-            container.innerHTML = '<p class="empty-state">No documents added yet. Add your supporting documents below.</p>';
-            return;
-        }
-
-        container.innerHTML = '';
-        documents.forEach((doc, index) => {
-            const div = document.createElement('div');
-            div.className = 'document-item';
-            div.innerHTML = `
-                    <div class="document-info">
-                        <h4>${doc.title})</h4>
-                        <p>${doc.link}</p>
-                        ${doc.description ? `<p style="font-size: 13px; margin-top: 5px;">${doc.description}</p>` : ''}
-                    </div>
-                    <button class="remove-btn" onclick="removeDocument(${index})">Remove</button>
-                `;
-            container.appendChild(div);
-        });
-    }
-
-    // Remove document
-    function removeDocument(index) {
-        documents.splice(index, 1);
-        renderDocuments();
-    }
-
-    // Submit application
-    document.getElementById('applicationForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        // Validate professors
-        if (professors.length === 0) {
-            alert('Please add at least one professor');
-            return;
-        }
-
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loading"></span> Submitting...';
-
-        // Gather form data
-        const applicationData = {
-            personalInfo: {
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                phoneNumber: document.getElementById('phoneNumber').value,
-                address: document.getElementById('address').value
-            },
-            fieldOfResearch: document.getElementById('fieldOfResearch').value,
-            professors: professors,
-            documents: documents
-        };
-
-        console.log(applicationData);
-
+    // Remove professor
+    async function removeProfessor(link) {
         try {
-            const response = await fetch('applicationFiles', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(applicationData)
+            const response = await fetch(link, {
+                method: 'DELETE',
             });
 
-            if (response.ok) {
-                document.getElementById('successModal').classList.add('active');
-            } else {
-                new Error('Failed to submit application');
+            if (!response.ok) {
+                throw new Error('Failed to delete professor');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Failed to submit application. Please try again.');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Application';
+            alert('Failed to delete professor. Please try again.');
         }
-    });
+    }
 
     renderProfessors();
 </script>
