@@ -111,6 +111,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             </tr>
         `).join("");
 
+        filteredApps.forEach(app => {
+            if(app.openedByAdmin){
+                lockApp(app.id);
+            }
+            });
+
         attachReviewListeners(filter);
     }
 
@@ -131,6 +137,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // Fetch full application details
                 const res = await fetch(`/api/applications/${id}`);
                 const data = await res.json();
+
+                // If application is already opened by someone else, don't open.
+                if(data.openedByAdmin){
+                    return;
+                }
+                else{
+                    // Broadcast that it is being opened so others can't open it.
+                    openAppOnServer(id);
+                }
 
                 popup.innerHTML = `<button id="closePopup">✖</button>`;
 
@@ -210,6 +225,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 // Close popup handler
                 document.getElementById("closePopup").addEventListener("click", () => {
+                    closeAppOnServer(id);
                     popup.style.display = "none";
                     popup.innerHTML = "";
                 });
