@@ -1,9 +1,9 @@
-package org.example.websocketconfig;
+package org.example.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.example.models.ApplicationFile;
 import org.example.repositories.ApplicationFileRepository;
+import org.example.websocketconfig.ApplicationOpenEvent;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
