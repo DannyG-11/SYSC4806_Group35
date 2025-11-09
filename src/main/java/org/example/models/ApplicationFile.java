@@ -36,6 +36,8 @@ public class ApplicationFile {
      */
     private boolean availableToProfs;
 
+    private boolean openedByAdmin;
+
     public ApplicationFile() {
         status = PENDING;
     }
@@ -114,5 +116,13 @@ public class ApplicationFile {
     }
     public void setStatus(RecommendationStatus status) {
         this.status = status;
+    }
+
+    public boolean isOpenedByAdmin() {
+        return openedByAdmin;
+    }
+
+    public void setOpenedByAdmin(boolean openedByAdmin) {
+        this.openedByAdmin = openedByAdmin;
     }
 }
