@@ -6,24 +6,25 @@ import org.example.models.ApplicationFile;
 import org.example.models.Professor;
 import org.example.repositories.ApplicationFileRepository;
 import org.example.repositories.ProfessorRepository;
+import org.example.security.SecurityConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @DataJpaTest
+@Import(SecurityConfiguration.class)
 public class RepositoryTests {
 
     @Autowired
     private ApplicationFileRepository applicationFileRepository;
     @Autowired
     private ProfessorRepository professorRepository;
+
+
 
     @Test
     public void testAssignFetchProfessor() {
