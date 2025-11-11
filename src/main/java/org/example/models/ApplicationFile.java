@@ -38,6 +38,8 @@ public class ApplicationFile {
 
     private boolean openedByAdmin;
 
+    private String openedBy;
+
     public ApplicationFile() {
         status = PENDING;
     }
@@ -124,5 +126,13 @@ public class ApplicationFile {
 
     public void setOpenedByAdmin(boolean openedByAdmin) {
         this.openedByAdmin = openedByAdmin;
+    }
+
+    public String getOpenedBy() {
+        return openedBy;
+    }
+
+    public void setOpenedBy(String openedBy) {
+        this.openedBy = openedBy;
     }
 }
