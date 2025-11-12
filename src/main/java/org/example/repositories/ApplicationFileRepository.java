@@ -12,4 +12,6 @@ public interface ApplicationFileRepository extends CrudRepository<ApplicationFil
     List<ApplicationFile> findByProfessors_Id(Long professorId);
 
     List<ApplicationFile> findByStatus(RecommendationStatus status);
+
+    List<ApplicationFile> findByOpenedBy(String username);
 }

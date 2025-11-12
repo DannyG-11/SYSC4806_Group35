@@ -1,4 +1,5 @@
 let stomp;
+let username = Math.random().toString();
 
 // Set up the connection and subscribe to the broadcasts
 function connectWs() {
@@ -6,6 +7,7 @@ function connectWs() {
     stomp = Stomp.over(sock);
     stomp.debug = null;
     stomp.connect({}, () => {
+
         // Broadcasts from server
         stomp.subscribe('/topic/apps/opened', msg => {
             const message = JSON.parse(msg.body);
@@ -21,14 +23,14 @@ function connectWs() {
 function openAppOnServer(id) {
     // Server: set openedByAdmin=true and broadcast to /topic/apps/opened
     if (stomp && stomp.connected) {
-        stomp.send(`/app/open/${id}`, {}, "{}");
+        stomp.send(`/app/open/${id}`, {}, username);
     }
 }
 
 function closeAppOnServer(id) {
     // Server: set openedByAdmin=false and broadcast to /topic/apps/closed
     if (stomp && stomp.connected) {
-        stomp.send(`/app/close/${id}`, {}, "{}");
+        stomp.send(`/app/close/${id}`, {}, username);
     }
 }
 
