@@ -13,13 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -55,7 +58,16 @@ public class GraduateAdmissionsControllerTests {
     // Test GET /api/applications (empty initially)
     @Test
     void getEmptyApplicationListTest() throws Exception {
-        this.mockMvc.perform(get("/api/applications"))
+        MockHttpSession session = (MockHttpSession) mockMvc.perform(
+                        formLogin("/login").user("admin").password("admin123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(authenticated().withUsername("admin"))
+                .andReturn()
+                .getRequest()
+                .getSession(false);
+
+        this.mockMvc.perform(get("/api/applications").session(session))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("[]")));
@@ -64,6 +76,15 @@ public class GraduateAdmissionsControllerTests {
     // Test POST /api/applications (create new application)
     @Test
     void createApplicationTest() throws Exception {
+        MockHttpSession session = (MockHttpSession) mockMvc.perform(
+                        formLogin("/login").user("admin").password("admin123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(authenticated().withUsername("admin"))
+                .andReturn()
+                .getRequest()
+                .getSession(false);
+
         Professor professor = new Professor();
         professor.setFirstName("Babak");
         professor.setLastName("Esfandiari");
@@ -80,7 +101,7 @@ public class GraduateAdmissionsControllerTests {
 
         String json = objectMapper.writeValueAsString(applicationFile);
 
-        this.mockMvc.perform(post("/api/applications")
+        this.mockMvc.perform(post("/api/applications").session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andDo(print())

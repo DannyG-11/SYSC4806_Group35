@@ -20,6 +20,11 @@ public class GraduateAdmissionsViewController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/apply")
     public String submitApplication(){
         return "apply";
