@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Graduate Admissions System</title>
     <style>
@@ -8,37 +8,44 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .header {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             margin-bottom: 30px;
         }
+
         .header-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 60px 40px;
             text-align: center;
         }
+
         .header-content h1 {
             font-size: 3em;
             margin-bottom: 15px;
         }
+
         .header-content p {
             font-size: 1.3em;
             opacity: 0.9;
         }
+
         .nav-section {
             padding: 20px 40px;
             display: flex;
@@ -46,12 +53,14 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
         .nav-group {
             display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: center;
         }
+
         .nav-group-label {
             font-size: 12px;
             color: #666;
@@ -59,23 +68,27 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
+
         .nav-links {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
         }
+
         .main-content {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             padding: 50px;
         }
+
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             margin-top: 30px;
         }
+
         .info-card {
             background: #f8f9fa;
             padding: 30px;
@@ -83,19 +96,23 @@
             border-left: 4px solid #667eea;
             transition: transform 0.2s, box-shadow 0.2s;
         }
+
         .info-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
         .info-card h3 {
             color: #667eea;
             margin-bottom: 15px;
             font-size: 1.5em;
         }
+
         .info-card p {
             color: #666;
             line-height: 1.6;
         }
+
         .button {
             padding: 14px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -109,22 +126,27 @@
             display: inline-block;
             transition: transform 0.2s;
         }
+
         .button:hover {
             transform: translateY(-2px);
         }
+
         .button-large {
             padding: 18px 40px;
             font-size: 18px;
         }
+
         .button-secondary {
             background: #95a5a6;
         }
+
         .section-title {
             font-size: 2em;
             color: #333;
             margin-bottom: 20px;
             text-align: center;
         }
+
         .welcome-text {
             text-align: center;
             color: #666;
@@ -132,16 +154,19 @@
             margin-bottom: 40px;
             line-height: 1.8;
         }
+
         .features-list {
             list-style: none;
             padding: 0;
         }
+
         .features-list li {
             padding: 10px 0;
             color: #666;
             padding-left: 25px;
             position: relative;
         }
+
         .features-list li:before {
             content: "✓";
             position: absolute;
@@ -150,30 +175,60 @@
             font-weight: bold;
             font-size: 1.2em;
         }
+
+        .logout-btn {
+            padding: 8px 20px;
+            background: red;
+            color: white;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: red;
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .user-logout {
+            float: right;
+            padding: 20px 20px 20px 20px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
+        <div class="user-logout" sec:authorize="isAuthenticated()">
+        <form action="/logout" method="post" style="margin: 0;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
         <div class="header-content">
             <h1>Graduate Admissions System</h1>
             <p>Apply for Graduate Studies</p>
         </div>
         <div class="nav-section">
-            <div class="nav-group">
+            <div class="nav-group" sec:authorize="hasAnyRole('APPLICANT', 'ADMIN')">
                 <div class="nav-group-label">Applicants</div>
                 <div class="nav-links">
                     <a href="/apply" class="button button-large">Start Application</a>
                 </div>
             </div>
-            <div class="nav-group">
+            <div class="nav-group" sec:authorize="hasRole('ADMIN')">
                 <div class="nav-group-label">Administrators</div>
                 <div class="nav-links">
                     <a href="/admin" class="button button-secondary">Admin Dashboard</a>
                     <a href="/addprofessors" class="button button-secondary">Add Professors</a>
                 </div>
             </div>
-            <div class="nav-group">
+            <div class="nav-group" sec:authorize="hasAnyRole('PROFESSOR', 'ADMIN')">
                 <div class="nav-group-label">Professors</div>
                 <div class="nav-links">
                     <a href="/evaluations" class="button button-secondary">Professor Portal</a>
@@ -185,8 +240,8 @@
     <div class="main-content">
         <h2 class="section-title">Welcome</h2>
         <p class="welcome-text">
-            Welcome to our Graduate Admissions System. We're here to help you through your application process 
-            for graduate studies. Submit your application with all the required information, and our team will 
+            Welcome to our Graduate Admissions System. We're here to help you through your application process
+            for graduate studies. Submit your application with all the required information, and our team will
             review it carefully.
         </p>
 
@@ -194,7 +249,7 @@
             <div class="info-card">
                 <h3>📝 Application Process</h3>
                 <p>
-                    Submit your graduate school application through our streamlined online portal. 
+                    Submit your graduate school application through our streamlined online portal.
                     All you need is your personal information, desired research field, and supporting documents.
                 </p>
             </div>
@@ -202,7 +257,7 @@
             <div class="info-card">
                 <h3>👨‍🏫 Professor Matching</h3>
                 <p>
-                    Specify professors you're interested in working with. Our system will help connect 
+                    Specify professors you're interested in working with. Our system will help connect
                     you with faculty members in your field of interest.
                 </p>
             </div>
@@ -210,7 +265,7 @@
             <div class="info-card">
                 <h3>📄 Document Submission</h3>
                 <p>
-                    Upload your supporting documents including transcripts, research statements, 
+                    Upload your supporting documents including transcripts, research statements,
                     and any other materials required for your application.
                 </p>
             </div>
@@ -218,7 +273,7 @@
             <div class="info-card">
                 <h3>⏱️ Timeline</h3>
                 <p>
-                    Applications are reviewed on a rolling basis. Selected applications are forwarded 
+                    Applications are reviewed on a rolling basis. Selected applications are forwarded
                     to professors for evaluation with clear deadlines.
                 </p>
             </div>
@@ -237,8 +292,8 @@
             <div class="info-card">
                 <h3>📧 Get Started</h3>
                 <p>
-                    Ready to begin? Click the "Start Application" button above to access our 
-                    comprehensive application form. If you have any questions, please contact 
+                    Ready to begin? Click the "Start Application" button above to access our
+                    comprehensive application form. If you have any questions, please contact
                     our admissions office.
                 </p>
             </div>
