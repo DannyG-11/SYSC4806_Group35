@@ -1,10 +1,12 @@
 package org.example.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.models.RecommendationStatus.PENDING;
+import static org.example.models.ApplicationStatus.NEW;
 
 @Entity
 public class ApplicationFile {
@@ -27,21 +29,16 @@ public class ApplicationFile {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProfessorEvaluation> evaluations;
 
-    private RecommendationStatus status;
+    private ApplicationStatus status;
 
-    /**
-     * The applicant files can be filtered/selected by an administrator. Those that are considered good enough are
-     * routed to profs for evaluation by a deadline.
-     * If true, it has been selected by an administrator for evaluation.
-     */
-    private boolean availableToProfs;
+    private ApplicationStatus finalRecommendationStatus;
 
     private boolean openedByAdmin;
 
     private String openedBy;
 
     public ApplicationFile() {
-        status = PENDING;
+        this.status = NEW;
     }
 
     public ApplicationFile(ApplicantPersonalInfo personalInfo, String fieldOfResearch, List<Professor> professors, List<Document> documents) {
@@ -49,7 +46,7 @@ public class ApplicationFile {
         this.fieldOfResearch = fieldOfResearch;
         this.professors = professors;
         this.documents = documents;
-        status = PENDING;
+        this.status = NEW;
     }
 
     public Long getId() {
@@ -93,14 +90,6 @@ public class ApplicationFile {
         this.fieldOfResearch = fieldOfResearch;
     }
 
-    public boolean isAvailableToProfs() {
-        return availableToProfs;
-    }
-
-    public void setAvailableToProfs(boolean availableToProfs) {
-        this.availableToProfs = availableToProfs;
-    }
-
     public List<ProfessorEvaluation> getEvaluations() {
         return evaluations;
     }
@@ -113,10 +102,10 @@ public class ApplicationFile {
         this.evaluations.add(evaluation);
     }
 
-    public RecommendationStatus getStatus() {
+    public ApplicationStatus getStatus() {
         return status;
     }
-    public void setStatus(RecommendationStatus status) {
+    public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
 
@@ -134,5 +123,19 @@ public class ApplicationFile {
 
     public void setOpenedBy(String openedBy) {
         this.openedBy = openedBy;
+    }
+
+    @JsonProperty("finalRecommendation")
+    public ApplicationStatus getFinalRecommendationStatus() { return this.finalRecommendationStatus; }
+
+    public boolean setFinalRecommendationStatus(ApplicationStatus finalRecommendationStatus) {
+        if (finalRecommendationStatus == ApplicationStatus.NOT_RECOMMENDED
+                || finalRecommendationStatus == ApplicationStatus.RECOMMENDED_NO_FUNDING
+                || finalRecommendationStatus == ApplicationStatus.RECOMMENDED_WITH_FUNDING
+                ||  finalRecommendationStatus == ApplicationStatus.RECOMMENDED_NO_SUPERVISION) {
+            this.finalRecommendationStatus = finalRecommendationStatus;
+            return true;
+        }
+        return false;
     }
 }

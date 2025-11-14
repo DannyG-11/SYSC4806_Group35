@@ -4,11 +4,12 @@
  * This script handles the front-end logic for displaying, filtering,
  * and reviewing student applications. It supports the following workflow:
  *   1. Fetch all applications from the backend.
- *   2. Filter applications by status (NEW, PENDING, EVALUATED).
+ *   2. Filter applications by status (NEW, PENDING, EVALUATED, ACCEPTED, REJECTED).
  *   3. Display details and allow reviewers to take actions:
  *        - Send for evaluation
  *        - Approve / Reject applications
  *        - View submitted evaluations
+ *        - View accepted/rejected applications
  */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -65,8 +66,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Display default view (NEW applications)
-    renderTable("NEW");
+    // Display default view (ALL applications)
+    renderTable("ALL");
 
     // Filter change handler
     statusFilter.addEventListener("change", () => {
@@ -80,13 +81,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     /**
      * Determines the current status of an application.
      * @param {Object} app - The application object.
-     * @returns {"NEW"|"PENDING"|"EVALUATED"|"UNKNOWN"}
+     * @returns {"NEW"|"PENDING"|"EVALUATED"}
      */
     function getStatus(app) {
-        if (!app.availableToProfs) return "NEW";
-        if (app.availableToProfs && (!app.evaluations || app.evaluations.length === 0)) return "PENDING";
-        if (app.evaluations && app.evaluations.length > 0) return "EVALUATED";
-        return "UNKNOWN";
+        switch (app.status) {
+            case "NEW":
+                return "NEW";
+            case "PENDING":
+                return "PENDING";
+            case "NOT_RECOMMENDED":
+            case "RECOMMENDED_NO_SUPERVISION":
+            case "RECOMMENDED_NO_FUNDING":
+            case "RECOMMENDED_WITH_FUNDING":
+                return "EVALUATED";
+            case "ACCEPTED":
+                return "ACCEPTED";
+            case "REJECTED":
+                return "REJECTED";
+            default:
+                return "INVALID";
+        }
     }
 
     /* ===============================
@@ -95,21 +109,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     /**
      * Renders the applications table based on a status filter.
-     * @param {string} filter - One of "NEW", "PENDING", "EVALUATED".
+     * @param {string} filter - One of "ALL", "NEW", "PENDING", "EVALUATED", "REJECTED", "ACCEPTED".
      */
     function renderTable(filter) {
-        const filteredApps = applications.filter(app => getStatus(app) === filter);
-
+        const filteredApps = (filter === "ALL") ? applications : applications.filter
+            (app => getStatus(app) === filter);
         // Build HTML table rows dynamically
-        tableBody.innerHTML = filteredApps.map(app => `
-            <tr>
-                <td>${app.id}</td>
-                <td>${app.personalInfo.firstName} ${app.personalInfo.lastName}</td>
-                <td>${app.personalInfo.email}</td>
-                <td>${app.fieldOfResearch}</td>
-                <td><button class="review-btn" data-id="${app.id}">Review</button></td>
-            </tr>
-        `).join("");
+        tableBody.innerHTML = filteredApps.map(app => {
+            const status = getStatus(app);
+            return `
+                <tr>
+                    <td>${app.id}</td>
+                    <td>${app.personalInfo.firstName} ${app.personalInfo.lastName}</td>
+                    <td>${app.personalInfo.email}</td>
+                    <td>${app.fieldOfResearch}</td>
+                    <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+                    <td><button class="review-btn" data-id="${app.id}">Review</button></td>
+                </tr>`;
+        }).join("");
 
         filteredApps.forEach(app => {
             if(app.openedByAdmin){
@@ -117,7 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             });
 
-        attachReviewListeners(filter);
+        attachReviewListeners();
     }
 
     /* ===============================
@@ -127,9 +144,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     /**
      * Attaches event listeners to dynamically generated "Review" buttons.
      * Opens a popup showing full application details and actions.
-     * @param {string} filter - The current application status filter.
      */
-    function attachReviewListeners(filter) {
+    function attachReviewListeners() {
         document.querySelectorAll(".review-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
                 const id = btn.getAttribute("data-id");
@@ -152,7 +168,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 /* -------------------------------
                    VIEW FOR EVALUATED APPLICATIONS
                    ------------------------------- */
-                if (filter === "EVALUATED") {
+                const appStatus = getStatus(data);
+                if (appStatus === "EVALUATED") {
                     popup.innerHTML += `
                         <h2>Application #${data.id}</h2>
                         <h3>Applicant</h3>
@@ -174,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     // Approve application
                     document.getElementById("approveBtn").addEventListener("click", async () => {
-                        const response = await fetch(`/api/applications/${id}/approve`, { method: "POST" });
+                        const response = await fetch(`/api/applications/${id}/accept`, { method: "POST" });
                         response.ok ? showMessage("✅ Application approved!") : showMessage("❌ Failed to approve.", "error");
                     });
 
@@ -187,7 +204,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     /* -------------------------------
                        VIEW FOR NEW OR PENDING APPLICATIONS
                        ------------------------------- */
-                } else {
+                } else if (appStatus === "NEW" || appStatus === "PENDING") {
                     popup.innerHTML += `
                         <h2>Application #${data.id}</h2>
                         <h3>Personal Info</h3>
@@ -198,7 +215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <h3>Documents</h3>
                         <ul>${data.documents.map(d => `<li><a href="${d.link}" target="_blank">${d.title}</a></li>`).join("")}</ul>
                         <div style="margin-top:20px;">
-                            ${filter === "NEW" ? `
+                            ${appStatus === "NEW" ? `
                                 <button id="sendEvalBtn" class="popup-btn send">📤 Send For Evaluation</button>
                                 <button id="rejectBtn" class="popup-btn reject">❌ Reject</button>
                             ` : `<p><i>Pending professor evaluations...</i></p>`}
@@ -206,17 +223,43 @@ document.addEventListener("DOMContentLoaded", async () => {
                     `;
 
                     // "Send for Evaluation" and "Reject" buttons only for NEW apps
-                    if (filter === "NEW") {
+                    if (appStatus === "NEW") {
                         document.getElementById("sendEvalBtn").addEventListener("click", async () => {
-                            const response = await fetch(`/api/applications/${id}/request-evaluation`, { method: "POST" });
+                            const response = await fetch(`/api/applications/${id}/request-evaluation`, {method: "POST"});
                             response.ok ? showMessage("✅ Application sent for evaluation!") : showMessage("❌ Failed to send.", "error");
                         });
 
                         document.getElementById("rejectBtn").addEventListener("click", async () => {
-                            const response = await fetch(`/api/applications/${id}/reject`, { method: "POST" });
-                            response.ok ? showMessage("❌ Application rejected.") : showMessage("⚠️ Failed to reject.", "error");
+                            const response = await fetch(`/api/applications/${id}`, {method: "POST"});
+                            response.ok ? showMessage("❌ Application Deleted.") : showMessage("⚠️ Failed to reject.", "error");
                         });
                     }
+                } else if (appStatus === "ACCEPTED" || appStatus === "REJECTED") {
+                    popup.innerHTML += `
+                        <h2>Application #${data.id}</h2>
+                 
+                        <h3>Personal Info</h3>
+                        <p><b>Name:</b> ${data.personalInfo.firstName} ${data.personalInfo.lastName}</p>
+                        <p><b>Email:</b> ${data.personalInfo.email}</p>
+                    
+                        <h3>Field of Research</h3>
+                        <p>${data.fieldOfResearch}</p>
+                    
+                        <h3>Documents</h3>
+                        <ul>${data.documents.map(d => `<li><a href="${d.link}" target="_blank">${d.title}</a></li>`).join("")}</ul>
+                    
+                        <h3>Final Recommendation</h3>
+                        <p><b>Professor's Recommendation:</b> ${data.finalRecommendation || "No recommendation recorded"}</p>
+                    
+                        <h3>Final Decision</h3>
+                        <p><b>Application Status:</b> 
+                           <span class="status-badge ${appStatus.toLowerCase()}">${appStatus}</span>
+                        </p>
+                    
+                        <div style="margin-top:15px;">
+                            <p><i>This application has been finalized and cannot be modified.</i></p>
+                        </div>
+                    `;
                 }
 
                 // Display popup

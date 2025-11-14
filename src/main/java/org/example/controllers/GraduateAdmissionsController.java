@@ -3,10 +3,12 @@ package org.example.controllers;
 import org.example.models.*;
 import org.example.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.example.models.ApplicationStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +63,7 @@ public class GraduateAdmissionsController {
             return ResponseEntity.notFound().build();
         }
         ApplicationFile applicationFile = applicationFileOptional.get();
-        applicationFile.setAvailableToProfs(true);
+        applicationFile.setStatus(ApplicationStatus.PENDING);
         applicationFileRepo.save(applicationFile);
 
         return ResponseEntity.ok(applicationFile);
@@ -72,20 +74,44 @@ public class GraduateAdmissionsController {
     public ResponseEntity<String> rejectApplication(@PathVariable Long id) {
         Optional<ApplicationFile> appOpt = applicationFileRepo.findById(id);
         if (appOpt.isEmpty()) return ResponseEntity.notFound().build();
+        ApplicationFile applicationFile = appOpt.get();
 
-        applicationFileRepo.deleteById(id);
-        return ResponseEntity.ok("Application rejected.");
+        // false if recommendation not set
+        if (applicationFile.setFinalRecommendationStatus(applicationFile.getStatus())) {
+            applicationFile.setStatus(ApplicationStatus.REJECTED);
+            applicationFileRepo.save(applicationFile);
+            return ResponseEntity.ok("Application rejected.");
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Cannot accept: application has no final recommendation status.");
     }
 
     // Get applications by status
     @GetMapping("/status/{status}")
     public Iterable<ApplicationFile> getApplicationsByStatus(@PathVariable String status) {
         try {
-            RecommendationStatus recStatus = RecommendationStatus.valueOf(status);
+            ApplicationStatus recStatus = ApplicationStatus.valueOf(status);
             return applicationFileRepo.findByStatus(recStatus);
         } catch (IllegalArgumentException e) {
             return new ArrayList<>();
         }
+    }
+
+    // admin accepts an application
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<String> acceptApplication(@PathVariable Long id){
+        Optional<ApplicationFile> appOpt = applicationFileRepo.findById(id);
+        if (appOpt.isEmpty()) {return ResponseEntity.notFound().build();};
+        ApplicationFile applicationFile = appOpt.get();
+        // false if recommendation not set
+        if (applicationFile.setFinalRecommendationStatus(applicationFile.getStatus())) {
+            applicationFile.setStatus(ApplicationStatus.ACCEPTED);
+            applicationFileRepo.save(applicationFile);
+            return ResponseEntity.ok("Application accepted.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Cannot accept: application has no final recommendation status.");
     }
 
     // Update application status
@@ -95,7 +121,7 @@ public class GraduateAdmissionsController {
         if (applicationOpt.isPresent()) {
             ApplicationFile application = applicationOpt.get();
             try {
-                RecommendationStatus recStatus = RecommendationStatus.valueOf(status);
+                ApplicationStatus recStatus = ApplicationStatus.valueOf(status);
                 application.setStatus(recStatus);
                 return applicationFileRepo.save(application);
             } catch (IllegalArgumentException e) {

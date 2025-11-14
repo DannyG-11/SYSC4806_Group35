@@ -3,7 +3,7 @@ package org.example;
 import org.example.models.ApplicationFile;
 import org.example.models.Professor;
 import org.example.models.ProfessorEvaluation;
-import org.example.models.RecommendationStatus;
+import org.example.models.ApplicationStatus;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,8 +37,8 @@ class ProfessorEvaluationTest {
 
     @Test
     public void setAndGetRecommendation() {
-        testEval.setRecommendation(RecommendationStatus.RECOMMENDED_NO_FUNDING);
-        assertEquals(RecommendationStatus.RECOMMENDED_NO_FUNDING, testEval.getRecommendation());
+        testEval.setRecommendation(ApplicationStatus.RECOMMENDED_NO_FUNDING);
+        assertEquals(ApplicationStatus.RECOMMENDED_NO_FUNDING, testEval.getRecommendation());
     }
 
     @Test
