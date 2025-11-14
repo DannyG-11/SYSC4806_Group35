@@ -20,7 +20,7 @@ public class ProfessorEvaluation {
      * available to them for the admins to view.
      */
     @Enumerated(EnumType.STRING)
-    private RecommendationStatus recommendation;
+    private ApplicationStatus recommendation;
 
     private String comments;
 
@@ -40,11 +40,11 @@ public class ProfessorEvaluation {
         this.comments = comments;
     }
 
-    public RecommendationStatus getRecommendation() {
+    public ApplicationStatus getRecommendation() {
         return recommendation;
     }
 
-    public void setRecommendation(RecommendationStatus recommendation) {
+    public void setRecommendation(ApplicationStatus recommendation) {
         this.recommendation = recommendation;
     }
 
