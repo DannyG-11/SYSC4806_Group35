@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register - Graduate Admissions System</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .register-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .section-title {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .required {
+            color: #e74c3c;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .role-card {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .role-card:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        .role-card.selected {
+            border-color: #667eea;
+            background: #e8eaf6;
+        }
+        .role-card input[type="radio"] {
+            margin-right: 10px;
+        }
+        .role-card-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .role-card-description {
+            font-size: 13px;
+            color: #666;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join the Graduate Admissions System</p>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/register}" method="post" id="registerForm">
+        <!-- Account Information -->
+        <div class="form-section">
+            <div class="section-title">Account Information</div>
+
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <input type="text" id="username" name="username" required autofocus>
+                <p class="help-text">Choose a unique username</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+                <p class="help-text">Use your university or personal email</p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <p class="help-text">Re-enter your password</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-section">
+            <div class="section-title">Select Your Role</div>
+            <p class="help-text" style="margin-bottom: 15px;">Choose one role that best describes you</p>
+
+            <input type="hidden" id="roleInput" name="role" required>
+
+            <div class="role-card" data-role="APPLICANT">
+                <div class="role-card-title">
+                    <input type="radio" name="roleSelection" value="APPLICANT" id="roleApplicant">
+                    <label for="roleApplicant" style="display: inline; cursor: pointer;">Applicant</label>
+                </div>
+                <div class="role-card-description">
+                    I want to apply for graduate studies and submit my application
+                </div>
+            </div>
+
+            <div class="role-card" data-role="PROFESSOR">
+                <div class="role-card-title">
+                    <input type="radio" name="roleSelection" value="PROFESSOR" id="roleProfessor">
+                    <label for="roleProfessor" style="display: inline; cursor: pointer;">Professor</label>
+                </div>
+                <div class="role-card-description">
+                    I am a faculty member and want to evaluate student applications
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicant Additional Information -->
+        <div class="form-section hidden" id="applicantInfo">
+            <div class="section-title">Applicant Personal Information</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="applicantFirstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="applicantFirstName" name="applicantFirstName">
+                </div>
+
+                <div class="form-group">
+                    <label for="applicantLastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="applicantLastName" name="applicantLastName">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="applicantPhone">Phone Number <span class="required">*</span></label>
+                <input type="text" id="applicantPhone" name="applicantPhone">
+                <p class="help-text">Format: 123-456-7890</p>
+            </div>
+
+            <div class="form-group">
+                <label for="applicantAddress">Address <span class="required">*</span></label>
+                <textarea id="applicantAddress" name="applicantAddress"></textarea>
+                <p class="help-text">Full mailing address</p>
+            </div>
+        </div>
+
+        <!-- Professor Additional Information -->
+        <div class="form-section hidden" id="professorInfo">
+            <div class="section-title">Professor Information</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="professorFirstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="professorFirstName" name="professorFirstName">
+                </div>
+
+                <div class="form-group">
+                    <label for="professorLastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="professorLastName" name="professorLastName">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="professorEmail">University Email <span class="required">*</span></label>
+                <input type="email" id="professorEmail" name="professorEmail">
+                <p class="help-text">Your official university email address</p>
+            </div>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">Create Account</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="/login">Login here</a>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Role selection handling
+        $('.role-card').on('click', function() {
+            const role = $(this).data('role');
+            const radio = $(this).find('input[type="radio"]');
+
+            // Deselect all cards
+            $('.role-card').removeClass('selected');
+            $('input[name="roleSelection"]').prop('checked', false);
+
+            // Select this card
+            $(this).addClass('selected');
+            radio.prop('checked', true);
+            $('#roleInput').val(role);
+
+            // Show/hide additional info sections
+            $('#applicantInfo, #professorInfo').addClass('hidden');
+
+            if (role === 'APPLICANT') {
+                $('#applicantInfo').removeClass('hidden');
+                // Make applicant fields required
+                $('#applicantFirstName, #applicantLastName, #applicantPhone, #applicantAddress').prop('required', true);
+                // Make professor fields not required
+                $('#professorFirstName, #professorLastName, #professorEmail').prop('required', false);
+            } else if (role === 'PROFESSOR') {
+                $('#professorInfo').removeClass('hidden');
+                // Make professor fields required
+                $('#professorFirstName, #professorLastName, #professorEmail').prop('required', true);
+                // Make applicant fields not required
+                $('#applicantFirstName, #applicantLastName, #applicantPhone, #applicantAddress').prop('required', false);
+            }
+        });
+
+        // Form validation
+        $('#registerForm').on('submit', function(e) {
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+            const role = $('#roleInput').val();
+
+            // Check if role is selected
+            if (!role) {
+                e.preventDefault();
+                alert('Please select a role');
+                return false;
+            }
+
+            // Check password match
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match');
+                return false;
+            }
+
+            return true;
+        });
+
+        // Autofill professor email with main email if same
+        $('#email').on('blur', function() {
+            const role = $('#roleInput').val();
+            if (role === 'PROFESSOR' && !$('#professorEmail').val()) {
+                $('#professorEmail').val($(this).val());
+            }
+        });
+    });
+</script>
+</body>
+</html>
