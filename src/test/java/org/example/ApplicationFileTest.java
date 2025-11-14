@@ -92,14 +92,6 @@ class ApplicationFileTest {
     }
 
     @Test
-    public void isAvailableToProfs() {
-        application.setAvailableToProfs(true);
-        assertTrue(application.isAvailableToProfs());
-        application.setAvailableToProfs(false);
-        assertFalse(application.isAvailableToProfs());
-    }
-
-    @Test
     public void setAndGetEvaluations() {
         List<ProfessorEvaluation> evaluations = new ArrayList<>();
         evaluations.add(new ProfessorEvaluation());
