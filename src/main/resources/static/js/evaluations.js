@@ -7,6 +7,7 @@
 
         // Load all applications on page load
         loadApplications();
+        loadProfessors();
 
         // Event Handlers
         $('#statusFilter').on('change', filterApplications);
@@ -75,6 +76,22 @@
                             </td>
                         </tr>
                     `);
+                }
+            });
+        }
+
+        // Load professors from API and populate dropdown
+        function loadProfessors() {
+            $.ajax({
+                url: '/professors',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data._embedded.professors);
+                    populateProfessorFilter(data._embedded.professors);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading professors:', error);
                 }
             });
         }
