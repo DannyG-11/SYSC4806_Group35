@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         });
 
                         document.getElementById("rejectBtn").addEventListener("click", async () => {
-                            const response = await fetch(`/api/applications/${id}`, {method: "POST"});
+                            const response = await fetch(`/api/applications/${id}`, {method: "DELETE"});
                             response.ok ? showMessage("❌ Application Deleted.") : showMessage("⚠️ Failed to reject.", "error");
                         });
                     }
