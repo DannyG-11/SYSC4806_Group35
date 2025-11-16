@@ -72,6 +72,20 @@ public class Main {
                 userRepository.save(admin);
                 System.out.println("Default admin user created: username=admin, password=admin123");
             }
+
+            // Create default applicant user for accessing default homepage
+            if (!userRepository.existsByUsername("user")) {
+                User defaultUser = new User();
+                defaultUser.setUsername("user");
+                defaultUser.setPassword(passwordEncoder.encode("user123"));
+                defaultUser.setEmail("user@example.com");
+
+                Role applicantRole = roleRepository.findByName("ROLE_APPLICANT").orElseThrow();
+                defaultUser.addRole(applicantRole);
+
+                userRepository.save(defaultUser);
+                System.out.println("Default user created: username=user, password=user123");
+            }
         };
     }
 }
