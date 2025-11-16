@@ -1,46 +1,22 @@
 $(document).ready(function() {
-    // Role selection handling
-    $('.role-card').on('click', function() {
-        const role = $(this).data('role');
-        const radio = $(this).find('input[type="radio"]');
 
-        // Deselect all cards
-        $('.role-card').removeClass('selected');
-        $('input[name="roleSelection"]').prop('checked', false);
-
-        // Select this card
-        $(this).addClass('selected');
-        radio.prop('checked', true);
-        $('#roleInput').val(role);
-
-        // Show/hide additional info sections
-        $('#applicantInfo, #professorInfo').addClass('hidden');
-
-        if (role === 'APPLICANT') {
-            $('#applicantInfo').removeClass('hidden');
-            // Make applicant fields required
-            $('#applicantFirstName, #applicantLastName, #applicantPhone, #applicantAddress').prop('required', true);
-            // Make professor fields not required
-            $('#professorFirstName, #professorLastName, #professorEmail').prop('required', false);
-        } else if (role === 'PROFESSOR') {
-            $('#professorInfo').removeClass('hidden');
-            // Make professor fields required
-            $('#professorFirstName, #professorLastName, #professorEmail').prop('required', true);
-            // Make applicant fields not required
-            $('#applicantFirstName, #applicantLastName, #applicantPhone, #applicantAddress').prop('required', false);
-        }
-    });
-
-    // Form validation
+    // Form validation on submit
     $('#registerForm').on('submit', function(e) {
         const password = $('#password').val();
         const confirmPassword = $('#confirmPassword').val();
-        const role = $('#roleInput').val();
+        const username = $('#username').val();
 
-        // Check if role is selected
-        if (!role) {
+        // Check username length
+        if (username.length < 3) {
             e.preventDefault();
-            alert('Please select a role');
+            alert('Username must be at least 3 characters long');
+            return false;
+        }
+
+        // Check password length
+        if (password.length < 8) {
+            e.preventDefault();
+            alert('Password must be at least 8 characters long');
             return false;
         }
 
@@ -51,14 +27,49 @@ $(document).ready(function() {
             return false;
         }
 
+        // All validations passed
         return true;
     });
 
-    // Autofill professor email with main email if same
-    $('#email').on('blur', function() {
-        const role = $('#roleInput').val();
-        if (role === 'PROFESSOR' && !$('#professorEmail').val()) {
-            $('#professorEmail').val($(this).val());
+    // Real-time password match indicator (optional enhancement)
+    $('#confirmPassword').on('input', function() {
+        const password = $('#password').val();
+        const confirmPassword = $(this).val();
+
+        if (confirmPassword.length > 0) {
+            if (password === confirmPassword) {
+                $(this).css('border-color', '#27ae60');
+            } else {
+                $(this).css('border-color', '#e74c3c');
+            }
+        } else {
+            $(this).css('border-color', '#e0e0e0');
+        }
+    });
+
+    // Username validation indicator
+    $('#username').on('input', function() {
+        const username = $(this).val();
+
+        if (username.length >= 3) {
+            $(this).css('border-color', '#27ae60');
+        } else if (username.length > 0) {
+            $(this).css('border-color', '#e74c3c');
+        } else {
+            $(this).css('border-color', '#e0e0e0');
+        }
+    });
+
+    // Password strength indicator
+    $('#password').on('input', function() {
+        const password = $(this).val();
+
+        if (password.length >= 8) {
+            $(this).css('border-color', '#27ae60');
+        } else if (password.length > 0) {
+            $(this).css('border-color', '#e74c3c');
+        } else {
+            $(this).css('border-color', '#e0e0e0');
         }
     });
 });

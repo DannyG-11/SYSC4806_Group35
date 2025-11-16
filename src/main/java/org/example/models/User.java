@@ -35,7 +35,7 @@ public class User {
     private Professor professor;
 
     // Link to ApplicantPersonalInfo if user is an applicant
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "applicant_info_id")
     private ApplicantPersonalInfo applicantInfo;
 

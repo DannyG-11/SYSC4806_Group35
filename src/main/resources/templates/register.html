@@ -34,6 +34,7 @@
                 <div class="form-group">
                     <label for="password">Password <span class="required">*</span></label>
                     <input type="password" id="password" name="password" required>
+                    <p class="help-text">Password must be 8 characters long</p>
                 </div>
 
                 <div class="form-group">
@@ -44,36 +45,8 @@
             </div>
         </div>
 
-        <!-- Role Selection -->
-        <div class="form-section">
-            <div class="section-title">Select Your Role</div>
-            <p class="help-text" style="margin-bottom: 15px;">Choose one role that best describes you</p>
-
-            <input type="hidden" id="roleInput" name="role" required>
-
-            <div class="role-card" data-role="APPLICANT">
-                <div class="role-card-title">
-                    <input type="radio" name="roleSelection" value="APPLICANT" id="roleApplicant">
-                    <label for="roleApplicant" style="display: inline; cursor: pointer;">Applicant</label>
-                </div>
-                <div class="role-card-description">
-                    I want to apply for graduate studies and submit my application
-                </div>
-            </div>
-
-            <div class="role-card" data-role="PROFESSOR">
-                <div class="role-card-title">
-                    <input type="radio" name="roleSelection" value="PROFESSOR" id="roleProfessor">
-                    <label for="roleProfessor" style="display: inline; cursor: pointer;">Professor</label>
-                </div>
-                <div class="role-card-description">
-                    I am a faculty member and want to evaluate student applications
-                </div>
-            </div>
-        </div>
-
         <!-- Applicant Additional Information -->
-        <div class="form-section hidden" id="applicantInfo">
+        <div class="form-section" id="applicantInfo">
             <div class="section-title">Applicant Personal Information</div>
 
             <div class="form-row">
@@ -101,34 +74,15 @@
             </div>
         </div>
 
-        <!-- Professor Additional Information -->
-        <div class="form-section hidden" id="professorInfo">
-            <div class="section-title">Professor Information</div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="professorFirstName">First Name <span class="required">*</span></label>
-                    <input type="text" id="professorFirstName" name="professorFirstName">
-                </div>
-
-                <div class="form-group">
-                    <label for="professorLastName">Last Name <span class="required">*</span></label>
-                    <input type="text" id="professorLastName" name="professorLastName">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="professorEmail">University Email <span class="required">*</span></label>
-                <input type="email" id="professorEmail" name="professorEmail">
-                <p class="help-text">Your official university email address</p>
-            </div>
-        </div>
-
         <button type="submit" class="btn" id="submitBtn">Create Account</button>
     </form>
 
     <div class="login-link">
         Already have an account? <a href="/login">Login here</a>
+    </div>
+
+    <div class="info-note">
+        <p><strong>Note:</strong> This registration is for applicants only. If you are a professor or administrator, please contact the system administrator for account creation.</p>
     </div>
 </div>
 </body>
