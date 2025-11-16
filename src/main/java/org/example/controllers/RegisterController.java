@@ -1,10 +1,8 @@
 package org.example.controllers;
 
 import org.example.models.ApplicantPersonalInfo;
-import org.example.models.Professor;
 import org.example.models.Role;
 import org.example.models.User;
-import org.example.repositories.ApplicantPersonalInfoRepository;
 import org.example.repositories.ProfessorRepository;
 import org.example.repositories.RoleRepository;
 import org.example.repositories.UserRepository;
@@ -13,16 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
 @Controller
 public class RegisterController {
-
-    @Autowired
-    private ProfessorRepository professorRepo;
 
     @Autowired
     private UserRepository userRepo;
@@ -32,9 +26,6 @@ public class RegisterController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ApplicantPersonalInfoRepository applicantPersonalInfoRepo;
 
     //Register Users
     @PostMapping("/register")
