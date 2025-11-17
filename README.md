@@ -25,7 +25,8 @@ Team members:
 # Upcoming Sprint:
 - Users should be able to upload real documents for submission.
 - Users should be able to recieve email notifications when changes are made to applications.
-- Finish implementation of accoutn registration
+- Finish implementation of account registration
+- Modify UI to be more intuitive for the specific role of the logged in user.
 
 ## UML Class Diagrams
 
