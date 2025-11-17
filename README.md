@@ -32,7 +32,7 @@ Team members:
 
 The models are documented in the `/diagrams` folder:
 - **UML Class Diagram**: [diagrams/M2-UML-Class-Diagram.mmd](diagrams/M2-UML-Class-Diagram.mmd)
-- **Database Schema Diagram**: [diagrams/M2-Database-Schema-Diagram.mmd](diagrams/M1-Database-Schema-Diagram.mmd)
+- **Database Schema Diagram**: [diagrams/M2-Database-Schema-Diagram.mmd](diagrams/M2-Database-Schema-Diagram.mmd)
 
 These diagrams are kept in sync with the code and updated as features are added.
 
