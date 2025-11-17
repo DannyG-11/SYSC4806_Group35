@@ -31,7 +31,7 @@ Team members:
 ## UML Class Diagrams
 
 The models are documented in the `/diagrams` folder:
-- **UML Class Diagram**: [diagrams/M2-UML-Diagram](diagrams/Milestone%202%20UML%20Diagram.mmd)
+- **UML Class Diagram**: [diagrams/M2-UML-Class-Diagram](diagrams/Milestone%202%20UML%20Diagram.mmd)
 - **Database Schema Diagram**: [diagrams/M2-Database-Schema-Diagram](diagrams/M2-Database-Schema-Diagram.mmd)
 
 These diagrams are kept in sync with the code and updated as features are added.
