@@ -1,0 +1,102 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+direction LR
+class ApplicationFile {
+  -Long id
+  -RecommendationStatus status
+  -String fieldOfResearch
+  --
+  -ApplicantPersonalInfo personalInfo
+  -List~Professor~ professors
+  -List~Document~ documents
+  -List~ProfessorEvaluation~ evaluations
+  +ApplicationFile()
+  +ApplicationFile(ApplicantPersonalInfo personalInfo, String fieldOfResearch, List~Professor~ professors, List~Document~ documents)
+  //Getters()
+  //Setters()
+}
+class ApplicantPersonalInfo {
+  -Long id
+  -String firstName
+  -String lastName
+  -String email
+  -String phoneNumber
+  -String address
+  +ApplicantPersonalInfo()
+  +ApplicantPersonalInfo(String firstName, String lastName, String email, String phoneNumber, String address)
+  //Getters()
+  //Setters()
+}
+class Professor {
+  -Long id
+  -String firstName
+  -String lastName
+  -String email
+  +Professor()
+  +Professot(String firstName, String lastName, String email)
+  //Getters()
+  //Setters()
+}
+class Document {
+  -Long id
+  -String title
+  -String link
+  +Document()
+  +Document(String title, String link)
+  //Getters()
+  //Setters()
+}
+class ProfessorEvaluation {
+  -Long id
+  -String comments
+  -ApplicationStatus recommendation
+  +ProfessorEvaluations()
+}
+class ApplicationStatus {
+  PENDING
+  NOT_RECOMMENDED
+  RECOMMENDED_NO_SUPERVISION
+  RECOMMENDED_NO_FUNDING
+  RECOMMENDED_WITH_FUNDING
+  --
+  -String label
+  +ApplicationStatus(String label)
+  +getLabel() String
+}
+<<Enumeration>> ApplicationStatus
+class Role {
+  - Long id
+  - String name
+  - String description
+  +Role()
+  +Role(String name, String description)
+  //Getters()
+  //Setters()
+}
+class User {
+  - Long id
+  - String username
+  - String password
+  - String email
+  - Set~Roles~ roles
+  - Professor professor
+  - ApplicantPersonalInfo applicantInfo
+  - boolean enabled = true
+  +User()
+  +User(String username, String password, String email)
+  //Getters()
+  //Setters()
+}
+ApplicationFile "1" o-- "1" ApplicantPersonalInfo : has-one
+ApplicationFile "1" o-- "0..*" Document : contains
+ApplicationFile "1" o-- "0..*" ProfessorEvaluation : collects
+ApplicationFile "1" -- "0..*" Professor : targets
+ProfessorEvaluation "0..*" -- "1" Professor : by
+ProfessorEvaluation "0..*" -- "1" ApplicationFile : for
+User "*" o-- "*" Role : has
+User "1" o-- "1" Professor : is a
+User "1" o-- "1" ApplicantPersonalInfo : has
+ApplicationFile ..> ApplicationStatus : uses
