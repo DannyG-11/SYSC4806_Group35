@@ -1,0 +1,108 @@
+erDiagram
+
+%% ===========================
+%% ENTITIES
+%% ===========================
+
+    APPLICANT_PERSONAL_INFO {
+        bigint ID PK
+        string ADDRESS
+        string EMAIL
+        string FIRST_NAME
+        string LAST_NAME
+        string PHONE_NUMBER
+    }
+
+    APPLICATION_FILE {
+        bigint ID PK
+        string FIELD_OF_RESEARCH
+        tinyint FINAL_RECOMMENDATION_STATUS
+        string OPENED_BY
+        boolean OPENED_BY_ADMIN
+        tinyint STATUS
+        bigint PERSONAL_INFO_ID FK
+    }
+
+    DOCUMENT {
+        bigint ID PK
+        string LINK
+        string TITLE
+        bigint APPLICATION_ID FK
+    }
+
+    PROFESSOR {
+        bigint ID PK
+        string EMAIL
+        string FIRST_NAME
+        string LAST_NAME
+    }
+
+    PROFESSOR_EVALUATION {
+        bigint ID PK
+        string COMMENTS
+        enum RECOMMENDATION
+        bigint APPLICATION_FILE_ID FK
+        bigint PROFESSOR_ID FK
+    }
+
+    APPLICATION_FILE_PROFESSORS {
+        bigint APPLICATION_FILE_ID FK
+        bigint PROFESSORS_ID FK
+    }
+
+    APPLICATION_FILE_EVALUATIONS {
+        bigint APPLICATION_FILE_ID FK
+        bigint EVALUATIONS_ID FK
+    }
+
+    USERS {
+        bigint ID PK
+        string EMAIL
+        boolean ENABLED
+        string PASSWORD
+        string USERNAME
+        bigint APPLICANT_INFO_ID FK
+        bigint PROFESSOR_ID FK
+    }
+
+    ROLES {
+        bigint ID PK
+        string DESCRIPTION
+        string NAME
+    }
+
+    USER_ROLES {
+        bigint USER_ID FK
+        bigint ROLE_ID FK
+    }
+
+%% ===========================
+%% RELATIONSHIPS
+%% ===========================
+
+%% Applicant → ApplicationFile (1-to-1 enforced by UNIQUE)
+    APPLICANT_PERSONAL_INFO ||--|| APPLICATION_FILE : "one-to-one (PERSONAL_INFO_ID unique)"
+
+%% ApplicationFile → Document
+    APPLICATION_FILE ||--o{ DOCUMENT : "1-to-many"
+
+%% ApplicationFile → ProfessorEvaluation
+    APPLICATION_FILE ||--o{ PROFESSOR_EVALUATION : "1-to-many"
+
+%% Professor → ProfessorEvaluation
+    PROFESSOR ||--o{ PROFESSOR_EVALUATION : "1-to-many"
+
+%% ApplicationFile ↔ Professor (Many-to-Many bridge table)
+    APPLICATION_FILE }o--o{ PROFESSOR : "many-to-many (via APPLICATION_FILE_PROFESSORS)"
+
+%% ApplicationFile ↔ ProfessorEvaluation (Many-to-Many, but EVALUATIONS_ID UNIQUE creates effectively 1-to-1)
+    APPLICATION_FILE }o--|| PROFESSOR_EVALUATION : "effectively 1-to-1 (bridge table has unique EVALUATIONS_ID)"
+
+%% Users → ApplicantPersonalInfo (1-to-1)
+    USERS ||--|| APPLICANT_PERSONAL_INFO : "one-to-one (APPLICANT_INFO_ID unique)"
+
+%% Users → Professor (1-to-1)
+    USERS ||--|| PROFESSOR : "one-to-one (PROFESSOR_ID unique)"
+
+%% Users ↔ Roles (Many-to-Many)
+    USERS }o--o{ ROLES : "many-to-many (via USER_ROLES)"
