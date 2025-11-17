@@ -16,13 +16,16 @@ Team members:
 - Request page allows users to create a new request with filler for documents and assigned professors.
 - Professors can view requests assigned to them and make decisions.
 - Tests exist for repositories, models, and controllers.
+- Users are able to select specific professors out of a list, instead of manually inputting their information.
+- Websockets have been implemented to avoid race conditions in admin modifications.
+- Separate admin page further for improved UX.
+- Users can now login to accounts
+- User access is determined by account roles
 
 # Upcoming Sprint:
-- Each user should be able to perform each of their main use cases.
 - Users should be able to upload real documents for submission.
-- Users should be able to select specific professors out of a list, instead of manually inputting their information.
-- Begin implementation of websockets for improved performance.
-- Separate admin page further for improved UX.
+- Users should be able to recieve email notifications when changes are made to applications.
+- Finish implementation of accoutn registration
 
 ## UML Class Diagrams
 
