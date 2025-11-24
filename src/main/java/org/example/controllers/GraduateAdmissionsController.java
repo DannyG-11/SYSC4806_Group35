@@ -1,12 +1,12 @@
 package org.example.controllers;
 
-import org.example.models.ApplicationFile;
-import org.example.models.Professor;
-import org.example.repositories.ApplicationFileRepository;
-import org.example.repositories.ProfessorRepository;
+import org.example.models.*;
+import org.example.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.example.models.ApplicationStatus;
 

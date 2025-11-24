@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register - Graduate Admissions System</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script th:src="@{/js/register.js}"></script>
+    <link th:href="@{/css/register.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="register-container">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join the Graduate Admissions System</p>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/register}" method="post" id="registerForm">
+        <!-- Account Information -->
+        <div class="form-section">
+            <div class="section-title">Account Information</div>
+
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <input type="text" id="username" name="username" required autofocus>
+                <p class="help-text">Choose a unique username</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+                <p class="help-text">Use your university or personal email</p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" required>
+                    <p class="help-text">Password must be 8 characters long</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <p class="help-text">Re-enter your password</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicant Additional Information -->
+        <div class="form-section" id="applicantInfo">
+            <div class="section-title">Applicant Personal Information</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="applicantFirstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="applicantFirstName" name="applicantFirstName">
+                </div>
+
+                <div class="form-group">
+                    <label for="applicantLastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="applicantLastName" name="applicantLastName">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="applicantPhone">Phone Number <span class="required">*</span></label>
+                <input type="text" id="applicantPhone" name="applicantPhone">
+                <p class="help-text">Format: 123-456-7890</p>
+            </div>
+
+            <div class="form-group">
+                <label for="applicantAddress">Address <span class="required">*</span></label>
+                <textarea id="applicantAddress" name="applicantAddress"></textarea>
+                <p class="help-text">Full mailing address</p>
+            </div>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">Create Account</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="/login">Login here</a>
+    </div>
+
+    <div class="info-note">
+        <p><strong>Note:</strong> This registration is for applicants only. If you are a professor or administrator, please contact the system administrator for account creation.</p>
+    </div>
+</div>
+</body>
+</html>
