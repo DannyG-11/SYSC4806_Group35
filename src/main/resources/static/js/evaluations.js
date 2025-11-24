@@ -4,11 +4,10 @@
     $(document).ready(function () {
         let allApplications = [];
         let currentApplication = null;
-        let allProfessors = [];
 
         // Load all applications on page load
-        loadProfessors();
         loadApplications();
+        loadProfessors();
 
         // Event Handlers
         $('#statusFilter').on('change', filterApplications);
@@ -84,12 +83,12 @@
         // Load professors from API and populate dropdown
         function loadProfessors() {
             $.ajax({
-                url: '/api/professors',
+                url: '/professors',
                 method: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    allProfessors = data;
-                    populateProfessorFilter(data);
+                    console.log(data._embedded.professors);
+                    populateProfessorFilter(data._embedded.professors);
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading professors:', error);
