@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Graduate Admissions System - Professor</title>
+    <link th:href="@{/css/index.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="user-logout">
+            <form action="/logout" method="post" style="margin: 0;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+        <div class="header-content">
+            <h1>Graduate Admissions System</h1>
+            <p>Professor Home</p>
+        </div>
+        <div class="nav-section">
+            <div class="nav-group">
+                <div class="nav-group-label">Professors</div>
+                <div class="nav-links">
+                    <a href="/evaluations" class="button button-secondary">Professor Portal</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2 class="section-title">Professor Tools</h2>
+        <p class="welcome-text">Access the professor portal to review and evaluate applications.</p>
+    </div>
+</div>
+</body>
+</html>
+
+

@@ -7,99 +7,81 @@
 <body>
 <div class="container">
     <div class="header">
-        <div class="user-logout" sec:authorize="isAuthenticated()">
-        <form action="/logout" method="post" style="margin: 0;">
-            <button type="submit" class="logout-btn">Logout</button>
-        </form>
-    </div>
-        <div class="header-content">
-            <h1>Graduate Admissions System</h1>
-            <p>Apply for Graduate Studies</p>
+        <div class="user-logout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" sec:authorize="isAuthenticated()">
+            <form action="/logout" method="post" style="margin: 0;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
         </div>
-        <div class="nav-section">
-            <div class="nav-group" sec:authorize="hasAnyRole('APPLICANT', 'ADMIN')">
-                <div class="nav-group-label">Applicants</div>
-                <div class="nav-links">
-                    <a href="/apply" class="button button-large">Start Application</a>
-                </div>
-            </div>
-            <div class="nav-group" sec:authorize="hasRole('ADMIN')">
-                <div class="nav-group-label">Administrators</div>
-                <div class="nav-links">
-                    <a href="/admin" class="button button-secondary">Admin Dashboard</a>
-                    <a href="/addprofessors" class="button button-secondary">Add Professors</a>
-                </div>
-            </div>
-            <div class="nav-group" sec:authorize="hasAnyRole('PROFESSOR', 'ADMIN')">
-                <div class="nav-group-label">Professors</div>
-                <div class="nav-links">
-                    <a href="/evaluations" class="button button-secondary">Professor Portal</a>
-                </div>
-            </div>
+        <div class="auth-links" sec:authorize="isAnonymous()">
+            <a href="/login" class="button button-tertiary small">Admin Login</a>
+            <a href="/login" class="button button-tertiary small">Professor Login</a>
         </div>
     </div>
+
+
 
     <div class="main-content">
-        <h2 class="section-title">Welcome</h2>
-        <p class="welcome-text">
-            Welcome to our Graduate Admissions System. We're here to help you through your application process
-            for graduate studies. Submit your application with all the required information, and our team will
-            review it carefully.
-        </p>
-
-        <div class="card-grid">
-            <div class="info-card">
-                <h3>📝 Application Process</h3>
-                <p>
-                    Submit your graduate school application through our streamlined online portal.
-                    All you need is your personal information, desired research field, and supporting documents.
+        <div class="hero-split">
+            <div class="hero-left">
+                <h2 class="hero-title">Apply for Graduate Studies</h2>
+                <p class="hero-desc">
+                    Start your application online in minutes. Tell us about your background and research interests,
+                    select professors you’d like to work with, and upload your supporting documents.
                 </p>
+                <a href="/apply" class="button button-large hero-cta">Start Application</a>
             </div>
 
-            <div class="info-card">
-                <h3>👨‍🏫 Professor Matching</h3>
-                <p>
-                    Specify professors you're interested in working with. Our system will help connect
-                    you with faculty members in your field of interest.
-                </p>
-            </div>
-
-            <div class="info-card">
-                <h3>📄 Document Submission</h3>
-                <p>
-                    Upload your supporting documents including transcripts, research statements,
-                    and any other materials required for your application.
-                </p>
-            </div>
-
-            <div class="info-card">
-                <h3>⏱️ Timeline</h3>
-                <p>
-                    Applications are reviewed on a rolling basis. Selected applications are forwarded
-                    to professors for evaluation with clear deadlines.
-                </p>
-            </div>
-
-            <div class="info-card">
-                <h3>✅ What You'll Need</h3>
-                <ul class="features-list">
-                    <li>Personal information</li>
-                    <li>Contact details</li>
-                    <li>Research field of interest</li>
-                    <li>Professor references</li>
-                    <li>Supporting documents</li>
+            <div class="hero-right">
+                <h3 class="docs-title">What You’ll Need</h3>
+                <ul class="docs-list">
+                    <li>Personal information and contact details</li>
+                    <li>Field of research you’re interested in</li>
+                    <li>Optional professor preferences</li>
+                    <li>Supporting documents (transcripts, statements, etc.)</li>
                 </ul>
             </div>
-
-            <div class="info-card">
-                <h3>📧 Get Started</h3>
-                <p>
-                    Ready to begin? Click the "Start Application" button above to access our
-                    comprehensive application form. If you have any questions, please contact
-                    our admissions office.
-                </p>
-            </div>
         </div>
+    </div>
+
+    <div class="bottom-band">
+        <section class="stats-band">
+            <div class="stat">
+                <div class="stat-value">500+</div>
+                <div class="stat-label">Applications processed yearly</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">40+</div>
+                <div class="stat-label">Supervising faculty</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">~2 weeks</div>
+                <div class="stat-label">Average initial review time</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">Rolling</div>
+                <div class="stat-label">Admissions timeline</div>
+            </div>
+        </section>
+
+        <section class="faq">
+            <h3 class="faq-title">Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <button class="faq-q">Can I save my application and finish later?</button>
+                <div class="faq-a">Yes. You can save your progress and return at any time before submission.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How should I choose professors?</button>
+                <div class="faq-a">Select faculty whose research areas align with your interests. You may specify multiple preferences.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What documents are required?</button>
+                <div class="faq-a">Typically transcripts and statements of interest. Additional items may be requested by the program.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How long does a decision take?</button>
+                <div class="faq-a">Timelines vary by program and reviewer load. You can track the status from your application portal.</div>
+            </div>
+        </section>
     </div>
 </div>
 </body>

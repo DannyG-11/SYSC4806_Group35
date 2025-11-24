@@ -9,6 +9,23 @@ body {
     min-height: 100vh;
     padding: 20px;
 }
+
+/* Return to Home button */
+.home-button {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.home-button:hover {
+    background: #f4f3ff;
+}
 .container {
     max-width: 900px;
     margin: 0 auto;

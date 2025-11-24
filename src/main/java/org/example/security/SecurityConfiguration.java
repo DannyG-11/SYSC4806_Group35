@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -20,36 +21,57 @@ public class SecurityConfiguration {
                 .httpBasic(Customizer.withDefaults())   // <--- add this
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers( "/login", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/apply", "/login", "/register", "/css/**", "/js/**").permitAll()
+                        // Allow read-only access to professor listing so applicants can select professors
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/professors", "/professors/**").permitAll()
+                        // Admin can manage professors (create/update/delete)
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/professors", "/professors/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/professors/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/professors/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/professors/**").hasRole("ADMIN")
+                        // Allow public application submissions to Spring Data REST repository
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/applicationFiles", "/applicationFiles/**").permitAll()
 
                         // Applicant endpoints - only APPLICANT role
                         .requestMatchers("/apply").hasAnyRole("APPLICANT", "ADMIN")
 
-                        // Professor endpoints - only PROFESSOR role
+                        // Professor portal
                         .requestMatchers("/evaluations").hasAnyRole("PROFESSOR", "ADMIN")
 
-                        // Admin endpoints - only ADMIN role
-                        .requestMatchers("/api/applications", "/admin", "/addprofessors", "api/professors").hasRole("ADMIN")
+                        // API access:
+                        // Professors and admins can GET applications and update status via PUT
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/applications", "/api/applications/**").hasAnyRole("PROFESSOR","ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/applications/**").hasAnyRole("PROFESSOR","ADMIN")
 
-                        .requestMatchers("/").hasAnyRole("ADMIN", "PROFESSOR", "APPLICANT")
+                        // Admin-only areas and other API writes
+                        .requestMatchers("/admin", "/addprofessors").hasRole("ADMIN")
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+
+                        // Default homepage requires a logged-in session (any authenticated user)
+                        .requestMatchers("/").authenticated()
 
                         // Any other request requires authentication
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(authenticationSuccessHandler())
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 ).csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new RoleBasedAuthenticationSuccessHandler();
     }
 
     @Bean

@@ -16,7 +16,20 @@ public class GraduateAdmissionsViewController {
     }
 
     @GetMapping("/")
-    public String home() {
+    public String home(org.springframework.security.core.Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isProfessor = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_PROFESSOR"));
+            if (isAdmin) {
+                return "admin-home";
+            }
+            if (isProfessor) {
+                return "professor-home";
+            }
+        }
         return "index";
     }
 
