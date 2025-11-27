@@ -1,38 +1,4 @@
 document.getElementById("addProfessorBtn").addEventListener("click", async () => {
-    const firstName = document.getElementById('profFirstName').value;
-    const lastName = document.getElementById('profLastName').value;
-    const email = document.getElementById('profEmail').value;
-
-    if (!firstName || !lastName || !email) {
-        alert('Please fill in all professor fields');
-        return;
-    }
-
-    const professor = { firstName, lastName, email };
-
-    // Add professor
-    try {
-        const response = await fetch('professors', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(professor)
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to add professor');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to add professor. Please try again.');
-    }
-
-    // Clear inputs
-    document.getElementById('profFirstName').value = '';
-    document.getElementById('profLastName').value = '';
-    document.getElementById('profEmail').value = '';
-
     renderProfessors();
 });
 

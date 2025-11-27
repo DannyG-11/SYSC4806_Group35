@@ -3,6 +3,7 @@ package org.example.controllers;
 import org.example.models.ApplicantPersonalInfo;
 import org.example.models.Role;
 import org.example.models.User;
+import org.example.models.Professor;
 import org.example.repositories.ProfessorRepository;
 import org.example.repositories.RoleRepository;
 import org.example.repositories.UserRepository;
@@ -12,11 +13,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
 
 @Controller
 public class RegisterController {
+
+    @Autowired
+    private ProfessorRepository professorRepo;
 
     @Autowired
     private UserRepository userRepo;
@@ -82,6 +87,69 @@ public class RegisterController {
         applicantInfo.setAddress(applicantAddress);
 
         user.setApplicantInfo(applicantInfo);
+
+        // Save user
+        userRepo.save(user);
+
+        return "redirect:/login?registered";
+    }
+
+    //Register Professor
+    @PostMapping("/registerprofessor")
+    public String registerProfessor(@RequestParam String firstName,
+                                    @RequestParam String lastName,
+                                    @RequestParam String email,
+                                    @RequestParam String username,
+                                    @RequestParam String password,
+                                    Model model) {
+        // Validation: Check if username or email already exists
+        if (userRepo.existsByUsername(username)) {
+            model.addAttribute("error", "Username already exists");
+            return "register";
+        }
+
+        if (userRepo.existsByEmail(email)) {
+            model.addAttribute("error", "Email already exists");
+            return "register";
+        }
+
+        // Create new user
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEmail(email);
+
+        // Assign APPLICANT role
+        Optional<Role> applicantRole = roleRepo.findByName("ROLE_PROFESSOR");
+
+        if (applicantRole.isEmpty()) {
+            model.addAttribute("error", "System error: Applicant role not found. Please contact administrator.");
+            return "register";
+        }
+
+        user.addRole(applicantRole.get());
+
+        /// Validate professor fields
+        if (firstName == null || lastName == null || email == null) {
+            model.addAttribute("error", "Please fill in all professor information");
+            return "register";
+        }
+
+        // Check if professor with this email already exists
+        Professor existingProf = professorRepo.findByEmail(email);
+        if (existingProf != null) {
+            // Link to existing professor
+            user.setProfessor(existingProf);
+        } else {
+            // Create new Professor
+            Professor professor = new Professor();
+            professor.setFirstName(firstName);
+            professor.setLastName(lastName);
+            professor.setEmail(email);
+
+            professor = professorRepo.save(professor);
+            user.setProfessor(professor);
+        }
 
         // Save user
         userRepo.save(user);
