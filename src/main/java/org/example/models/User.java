@@ -30,7 +30,7 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     // Link to Professor if user is a professor
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "professor_id")
     private Professor professor;
 

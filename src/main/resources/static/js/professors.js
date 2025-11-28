@@ -30,7 +30,7 @@ async function renderProfessors() {
                         <h4>${prof.firstName} ${prof.lastName}</h4>
                         <p style="font-size: 13px;">${prof.email}</p>
                     </div>
-                    <button class="remove-btn" onclick="removeProfessor('${prof._links.self.href}')">Remove</button>
+                    <button class="remove-btn" onclick="removeProfessor('${prof.email}')">Remove</button>
                 `;
             container.appendChild(div);
         });
@@ -40,19 +40,25 @@ async function renderProfessors() {
 }
 
 // Remove professor
-async function removeProfessor(link) {
+async function removeProfessor(email) {
     try {
-        const response = await fetch(link, {
+        const response = await fetch('/registerprofessor', {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: email
         });
 
         if (!response.ok) {
-            throw new Error('Failed to delete professor');
+            throw new Error('Failed to delete professor.');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to delete professor. Please try again.');
+        alert('Failed to delete professor. This professor may have linked applications');
     }
+
+    renderProfessors();
 }
 
 renderProfessors();

@@ -11,15 +11,14 @@
     </div>
 
     <div class="content">
+        <!-- Professors -->
+        <h2 class="section-title">Professors</h2>
+
+        <div id="professorsList">
+            <p class="empty-state">No professors added yet. Add professors below.</p>
+        </div>
+
         <form th:action="@{/registerprofessor}" method="post" id="applicationForm">
-
-            <!-- Professors -->
-            <h2 class="section-title">Professors <span class="required">*</span></h2>
-
-            <div id="professorsList">
-                <p class="empty-state">No professors added yet. Add professors below.</p>
-            </div>
-
             <div class="add-section">
                 <h4>Add Professor</h4>
                 <div class="form-group">

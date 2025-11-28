@@ -34,7 +34,11 @@ public class Main {
             Professor prof = new Professor();
             prof.setFirstName("John");
             prof.setLastName("Doe");
-            professorRepository.save(prof);
+            prof.setEmail("john@doe.ca");
+
+            User user = new User("johndoe", passwordEncoder.encode("12345"), "john@doe.ca");
+            user.setProfessor(prof);
+            userRepository.save(user);
 
             // Setup arguments for ApplicationFile
             String firstName = "John";
