@@ -11,28 +11,35 @@
     </div>
 
     <div class="content">
-        <form id="applicationForm">
+        <!-- Professors -->
+        <h2 class="section-title">Professors</h2>
 
-            <!-- Professors -->
-            <h2 class="section-title">Professors <span class="required">*</span></h2>
+        <div id="professorsList">
+            <p class="empty-state">No professors added yet. Add professors below.</p>
+        </div>
 
-            <div id="professorsList">
-                <p class="empty-state">No professors added yet. Add professors below.</p>
-            </div>
-
+        <form th:action="@{/registerprofessor}" method="post" id="applicationForm">
             <div class="add-section">
                 <h4>Add Professor</h4>
                 <div class="form-group">
                     <label>Professor First Name</label>
-                    <input type="text" id="profFirstName">
+                    <input type="text" id="firstName" name="firstName">
                 </div>
                 <div class="form-group">
                     <label>Professor Last Name</label>
-                    <input type="text" id="profLastName">
+                    <input type="text" id="lastName" name="lastName">
                 </div>
                 <div class="form-group">
                     <label>Professor Email</label>
-                    <input type="email" id="profEmail">
+                    <input type="email" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" name="username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" name="password">
                 </div>
                 <button type="submit" class="button" id="addProfessorBtn">Add Professor</button>
             </div>
