@@ -193,12 +193,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                     document.getElementById("approveBtn").addEventListener("click", async () => {
                         const response = await fetch(`/api/applications/${id}/accept`, { method: "POST" });
                         response.ok ? showMessage("✅ Application approved!") : showMessage("❌ Failed to approve.", "error");
+                        if(response.ok){
+                            await sendEmail(data.personalInfo.email,
+                                "Applications Management Admission Update",
+                                "Your application has been accepted! The following recommendation has been made: " + data.status)
+                        }
                     });
 
                     // Reject after evaluation
                     document.getElementById("rejectEvalBtn").addEventListener("click", async () => {
                         const response = await fetch(`/api/applications/${id}/reject`, { method: "POST" });
                         response.ok ? showMessage("❌ Application rejected.") : showMessage("⚠️ Failed to reject.", "error");
+                        if(response.ok){
+                            await sendEmail(data.personalInfo.email,
+                                "Applications Management Admission Update",
+                                "Your application has been denied. Please apply again next year.")
+                        }
                     });
 
                     /* -------------------------------
@@ -243,6 +253,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                         document.getElementById("rejectBtn").addEventListener("click", async () => {
                             const response = await fetch(`/api/applications/${id}`, {method: "DELETE"});
                             response.ok ? showMessage("❌ Application Deleted.") : showMessage("⚠️ Failed to reject.", "error");
+                            if(response.ok){
+                                await sendEmail(data.personalInfo.email,
+                                    "Applications Management Admission Update",
+                                    "Your application has been denied. Please apply again next year.")
+                            }
                         });
                     }
                 } else if (appStatus === "ACCEPTED" || appStatus === "REJECTED") {
@@ -257,7 +272,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <p>${data.fieldOfResearch}</p>
                     
                         <h3>Documents</h3>
-                        <ul>${data.documents.map(d => `<li><a href="${d.link}" target="_blank">${d.title}</a></li>`).join("")}</ul>
+                        <ul>${data.documents.map(d => `
+                            <li>
+                              <a
+                                href="data:${d.contentType};base64,${d.data}"
+                                download="${d.fileName}"
+                                target="_blank"
+                              >
+                                ${d.fileName}
+                              </a>
+                            </li>
+                          `).join("")}
+                        </ul>
                     
                         <h3>Final Recommendation</h3>
                         <p><b>Professor's Recommendation:</b> ${data.finalRecommendation || "No recommendation recorded"}</p>
@@ -285,5 +311,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             });
         });
+    }
+
+    async function sendEmail(destinationAddress, subject, message) {
+        const response = await fetch('/api/email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to: destinationAddress,
+                subject: subject,
+                body: message
+            })
+        });
+
+        if (response.ok) {
+            alert('Email sent!');
+        } else {
+            alert('Failed to send email');
+        }
     }
 });

@@ -2,9 +2,13 @@ package org.example.controllers;
 
 import org.example.models.*;
 import org.example.repositories.*;
+import org.example.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,9 @@ public class GraduateAdmissionsController {
 
     @Autowired
     private ProfessorRepository professorRepo;
+
+    @Autowired
+    private EmailService emailService;
 
     // Get all applications
     @GetMapping
@@ -65,6 +72,14 @@ public class GraduateAdmissionsController {
         ApplicationFile applicationFile = applicationFileOptional.get();
         applicationFile.setStatus(ApplicationStatus.PENDING);
         applicationFileRepo.save(applicationFile);
+
+        List<String> professorEmails = new ArrayList<>();
+        for (Professor prof : applicationFile.getProfessors()) {
+            professorEmails.add(prof.getEmail());
+        }
+
+        // Done async
+        emailService.sendEvaluationRequests(professorEmails);
 
         return ResponseEntity.ok(applicationFile);
     }
