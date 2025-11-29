@@ -277,8 +277,12 @@
                 $.each(app.documents, function (index, doc) {
                     modalContent += `
                         <div class="document-card">
-                            <h4>${doc.title}</h4>
-                            <p><strong>URL:</strong> <a href="${doc.link}" target="_blank">${doc.link}</a></p>
+                            <h4>${doc.fileName}</h4>
+                            <p><strong>URL:</strong> 
+                                <a href="data:${doc.contentType};base64,${doc.data}"
+                                download="${doc.fileName}"
+                                target="_blank" > ${doc.fileName} </a>
+                            </p>
                         </div>
                     `;
                 });
