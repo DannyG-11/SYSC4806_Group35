@@ -31,6 +31,12 @@ public class Main {
     @Bean
     public CommandLineRunner demo(ApplicationFileRepository applicationFileRepository, ProfessorRepository professorRepository, RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return (args) -> {
+            // Create roles
+            createRoleIfNotExists(roleRepository,"ROLE_APPLICANT", "Applicant - Can submit applications");
+            createRoleIfNotExists(roleRepository,"ROLE_PROFESSOR", "Professor - Can evaluate applications");
+            createRoleIfNotExists(roleRepository,"ROLE_ADMIN", "Administrator - Full access");
+
+            // Create professor
             Professor prof = new Professor();
             prof.setFirstName("John");
             prof.setLastName("Doe");
@@ -38,6 +44,9 @@ public class Main {
 
             User user = new User("johndoe", passwordEncoder.encode("12345"), "john@doe.ca");
             user.setProfessor(prof);
+
+            Role profRole = roleRepository.findByName("ROLE_PROFESSOR").orElseThrow();
+            user.addRole(profRole);
             userRepository.save(user);
 
             // Setup arguments for ApplicationFile
@@ -57,11 +66,6 @@ public class Main {
 
             applicationFileRepository.save(new ApplicationFile(
                     applicantPersonalInfo, fieldOfResearch, professors, documents));
-
-            //Create Roles and Default Admin Login
-            createRoleIfNotExists(roleRepository,"ROLE_APPLICANT", "Applicant - Can submit applications");
-            createRoleIfNotExists(roleRepository,"ROLE_PROFESSOR", "Professor - Can evaluate applications");
-            createRoleIfNotExists(roleRepository,"ROLE_ADMIN", "Administrator - Full access");
 
             // Create default admin user if it doesn't exist
             if (!userRepository.existsByUsername("admin")) {
