@@ -257,7 +257,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <p>${data.fieldOfResearch}</p>
                     
                         <h3>Documents</h3>
-                        <ul>${data.documents.map(d => `<li><a href="${d.link}" target="_blank">${d.title}</a></li>`).join("")}</ul>
+                        <ul>${data.documents.map(d => `
+                            <li>
+                              <a
+                                href="data:${d.contentType};base64,${d.data}"
+                                download="${d.fileName}"
+                                target="_blank"
+                              >
+                                ${d.fileName}
+                              </a>
+                            </li>
+                          `).join("")}
+                        </ul>
                     
                         <h3>Final Recommendation</h3>
                         <p><b>Professor's Recommendation:</b> ${data.finalRecommendation || "No recommendation recorded"}</p>
