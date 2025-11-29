@@ -1,9 +1,6 @@
 package org.example.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Document {
@@ -12,14 +9,19 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-    private String link;
+    // file info
+    private String fileName;
+    private String contentType;
+
+    @Lob
+    private byte[] data;
 
     public Document() { }
 
-    public Document(String title, String link) {
-        this.title = title;
-        this.link = link;
+    public Document(String fileName, String contentType, byte[] data) {
+        this.fileName = fileName;
+        this.contentType = contentType;
+        this.data = data;
     }
 
     /**
@@ -39,19 +41,27 @@ public class Document {
         this.id = id;
     }
 
-    public String getLink() {
-        return link;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public String getTitle() {
-        return title;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
     }
 }

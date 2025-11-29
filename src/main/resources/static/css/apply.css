@@ -212,3 +212,30 @@ textarea {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/*For file uploads*/
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fff;
+}
+
+
+input[type="file"]::file-selector-button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+input[type="file"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
