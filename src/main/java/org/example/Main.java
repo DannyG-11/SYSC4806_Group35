@@ -41,7 +41,7 @@ public class Main {
             // Setup arguments for ApplicationFile
             String firstName = "John";
             String lastName = "Doe";
-            String email = "johndoe@cmail.carleton.ca";
+            String email = "DAVEEXINOR@cmail.carleton.ca";
             String phoneNumber = "1234567890";
             String address = "1125 Colonel By Drive, Ottawa, Ontario";
             ApplicantPersonalInfo applicantPersonalInfo = new ApplicantPersonalInfo(
