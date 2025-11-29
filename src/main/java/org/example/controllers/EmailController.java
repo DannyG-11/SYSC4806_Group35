@@ -21,7 +21,7 @@ public class EmailController {
         message.setTo(request.getTo());
         message.setSubject(request.getSubject());
         message.setText(request.getBody());
-        message.setFrom("sysc4806confirmationsg35@gmail.com");  // must match your SMTP account
+        message.setFrom("sysc4806confirmationsg35@gmail.com");
 
         mailSender.send(message);
     }
