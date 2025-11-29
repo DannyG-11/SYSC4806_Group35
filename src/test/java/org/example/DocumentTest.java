@@ -10,31 +10,44 @@ class DocumentTest {
 
     private Document testDocument;
 
-    @BeforeAll
-    public void setUp() {
-        testDocument = new Document("Title", "link");
-    }
+    @Test
+    void noArgsConstructor_shouldCreateEmptyDocument() {
+        Document document = new Document();
 
-    @AfterAll
-    public void tearDown() {
-        testDocument = null;
+        assertNull(document.getId());
+        assertNull(document.getFileName());
+        assertNull(document.getContentType());
+        assertNull(document.getData());
     }
 
     @Test
-    public void setAndGetId() {
-        testDocument.setId(8L);
-        assertEquals(8L, testDocument.getId());
+    void emptyConstructorTest() {
+        byte[] data = "hello".getBytes();
+
+        Document document = new Document("test.pdf", "application/pdf", data);
+
+        assertEquals("test.pdf", document.getFileName());
+        assertEquals("application/pdf", document.getContentType());
+        assertArrayEquals(data, document.getData());
     }
 
     @Test
-    public void setAndGetLink() {
-        testDocument.setLink("link");
-        assertEquals("link", testDocument.getLink());
-    }
+    void FullConstructorTest() {
+        Document document = new Document();
 
-    @Test
-    public void setAndGetTitle() {
-        testDocument.setTitle("title");
-        assertEquals("title", testDocument.getTitle());
+        Long id = 1L;
+        String fileName = "file.txt";
+        String contentType = "text/plain";
+        byte[] data = "content".getBytes();
+
+        document.setId(id);
+        document.setFileName(fileName);
+        document.setContentType(contentType);
+        document.setData(data);
+
+        assertEquals(id, document.getId());
+        assertEquals(fileName, document.getFileName());
+        assertEquals(contentType, document.getContentType());
+        assertArrayEquals(data, document.getData());
     }
 }

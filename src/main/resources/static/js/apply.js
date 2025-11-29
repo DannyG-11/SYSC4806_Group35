@@ -48,23 +48,43 @@ function selectProfessor(prof){
 }
 
 // Add document to list
-function addDocument() {
-    const title = document.getElementById('docFileName').value;
-    const link = document.getElementById('docFileUrl').value;
+async function addDocument() {
+    const fileInput = document.getElementById('docFile');
+    const file = fileInput.files[0];
 
-    if (!title || !link) {
-        alert('Please provide a file name and URL');
+    if (!file) {
         return;
     }
 
-    const newDoc = { title, link };
+    // Convert file -> base64
+    const base64Data = await fileToBase64(file);
+
+    const newDoc = {
+        fileName: file.name,
+        contentType: file.type || 'application/octet-stream',
+        data: base64Data          // will map to byte[] on the backend
+    };
+
     documents.push(newDoc);
 
-    // Clear inputs
-    document.getElementById('docFileName').value = '';
-    document.getElementById('docFileUrl').value = '';
-
+    fileInput.value = '';
     renderDocuments();
+}
+
+// Helper: file -> base64 (without the "data:...;base64," prefix)
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = e => {
+            const result = e.target.result;         // "data:...;base64,XXXX"
+            const base64 = result.split(',')[1];    // keep only the actual base64
+            resolve(base64);
+        };
+
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 // Render documents list
@@ -82,9 +102,7 @@ function renderDocuments() {
         div.className = 'document-item';
         div.innerHTML = `
                 <div class="document-info">
-                    <h4>${doc.title})</h4>
-                    <p>${doc.link}</p>
-                    ${doc.description ? `<p style="font-size: 13px; margin-top: 5px;">${doc.description}</p>` : ''}
+                    <h4>${doc.fileName}</h4>
                 </div>
                 <button class="remove-btn" onclick="removeDocument(${index})">Remove</button>
             `;

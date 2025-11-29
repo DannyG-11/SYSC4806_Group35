@@ -213,7 +213,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <h3>Field of Research</h3>
                         <p>${data.fieldOfResearch}</p>
                         <h3>Documents</h3>
-                        <ul>${data.documents.map(d => `<li><a href="${d.link}" target="_blank">${d.title}</a></li>`).join("")}</ul>
+                        <ul>${data.documents.map(d => `
+                            <li>
+                              <a
+                                href="data:${d.contentType};base64,${d.data}"
+                                download="${d.fileName}"
+                                target="_blank"
+                              >
+                                ${d.fileName}
+                              </a>
+                            </li>
+                          `).join("")}
+                        </ul>
                         <div style="margin-top:20px;">
                             ${appStatus === "NEW" ? `
                                 <button id="sendEvalBtn" class="popup-btn send">📤 Send For Evaluation</button>
